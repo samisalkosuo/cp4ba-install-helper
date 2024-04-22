@@ -62,7 +62,7 @@ Note: this can be used multiple times in multiple namespaces so you can install 
 ** Namespace: your chosen namespace
 ** Select user
 ** Enter registry key
-** Wait until operators are installed
+* Wait until operators are installed
 
 == Databases
 
