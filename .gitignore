@@ -1,0 +1,9 @@
+local/
+**/temp.yaml
+users.htpasswd
+htpasswd/*yaml
+5.*/
+ldap-cert.crt
+export-env.sh
+.env
+properties/

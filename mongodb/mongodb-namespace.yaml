@@ -1,0 +1,10 @@
+#from https://phoenixnap.com/kb/kubernetes-mongodb
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {NAMESPACE}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-100"
+spec:
+  finalizers:
+  - kubernetes

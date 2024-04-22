@@ -1,0 +1,103 @@
+#from https://phoenixnap.com/kb/kubernetes-mongodb
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: mongodb-pvc
+  namespace: {NAMESPACE}
+spec:
+  storageClassName: ocs-storagecluster-cephfs
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-secret
+  namespace: {NAMESPACE}
+type: Opaque
+stringData:
+  MONGO_ROOT_USERNAME: admin
+  MONGO_ROOT_PASSWORD: passw0rd
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-configmap
+  namespace: {NAMESPACE}
+data:
+  mongo.conf: |
+    storage:
+      dbPath: /data/db
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: {NAMESPACE}
+spec:
+  serviceName: mongodb-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        #selector: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:5
+        env:
+          - name: MONGO_INITDB_ROOT_USERNAME_FILE
+            value: /etc/k8-test/MONGO_ROOT_USERNAME
+          - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+            value: /etc/k8-test/MONGO_ROOT_PASSWORD
+        volumeMounts:
+        - name: k8-test
+          mountPath: /etc/k8-test
+          readOnly: true
+        - name: mongodb-configmap
+          mountPath: /config
+          readOnly: true
+        - name: mongodb-data
+          mountPath: /data/db
+      volumes:
+      - name: k8-test
+        secret:
+          secretName: mongodb-secret
+          items:
+          - key: MONGO_ROOT_USERNAME
+            path: MONGO_ROOT_USERNAME
+            mode: 0444
+          - key: MONGO_ROOT_PASSWORD
+            path: MONGO_ROOT_PASSWORD
+            mode: 0444
+      - name: mongodb-configmap
+        configMap:
+          name: mongodb-configmap
+          items:
+          - key: mongo.conf
+            path: mongo.conf
+      - name: mongodb-data
+        persistentVolumeClaim:
+          claimName: mongodb-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-svc
+  namespace: {NAMESPACE}
+  labels:
+    app: mongodb
+spec:
+  clusterIP: None
+  selector:
+    app: mongodb
+  ports:
+    - port: 27017
