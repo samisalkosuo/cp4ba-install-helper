@@ -3,6 +3,7 @@ local/
 users.htpasswd
 htpasswd/*yaml
 5.*/
+execute-sql-in-container.sh
 ldap-cert.crt
 export-env.sh
 .env
