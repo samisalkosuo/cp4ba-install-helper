@@ -2,11 +2,13 @@
 
 if [[ "$1" == "" ]]; then
     echo "CP4BA PostgreSQL namespace is missing."
+    echo "Usage: $0 <namespace> <'cp4ba-prerequisites'-directory>"
     exit 1
 fi
 
 if [[ "$2" == "" ]]; then
     echo "'cp4ba-prerequisites'-directory is missing."
+    echo "Usage: $0 <namespace> <'cp4ba-prerequisites'-directory>"
     exit 1
 fi
 
@@ -17,9 +19,9 @@ PREREQ_DIR=$2
 #get script dir
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-cd $SCRIPT_DIR
-
 oc cp -c postgres $PREREQ_DIR/dbscript $NAMESPACE/postgres-0:/tmp/
+
+cd $SCRIPT_DIR
 
 #create script
 SCRIPT_FILE=execute-sql-in-container.sh

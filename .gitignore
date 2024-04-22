@@ -6,6 +6,7 @@ htpasswd/*yaml
 execute-sql-in-container.sh
 ldap-cert.crt
 export-env.sh
+cert-kubernetes.tar
 .env
 .vscode/
 properties/
