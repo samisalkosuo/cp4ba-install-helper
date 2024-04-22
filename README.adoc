@@ -234,10 +234,13 @@ Since database is inside the cluster, verification needs to be done from CP4BA o
 
 This is documented https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=pycc-recommended-preparing-databases-secrets-your-chosen-capabilities-by-running-script and step 9. 
 
-Note that path to LDAP certificate is not included and path is incorrect when running inside operator so that needs to be changed.
+Alternatively:
 
-* Copy certificate to `/tmp/ldap-cert.crt`.
-* Change certificate path in `cp4ba_LDAP.property`-file.
+* Execute: 
+** `./validate/validate-prereqs.sh <version>`
+** where _<version>_ is case version that was downloaded.
+** Script packages _cert-kubernetes_-directory and copies files to operator pod.
+* Follow instructions in the script.
 
 == CP4BA installation
 
