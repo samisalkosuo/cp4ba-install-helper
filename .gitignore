@@ -7,4 +7,5 @@ execute-sql-in-container.sh
 ldap-cert.crt
 export-env.sh
 .env
+.vscode/
 properties/

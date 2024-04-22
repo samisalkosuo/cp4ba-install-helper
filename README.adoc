@@ -143,7 +143,7 @@ Database is PostgreSQL that was installed earlier.
 Enter following properties:
 
 * `dbserver1.DATABASE_SERVERNAME="postgres.<ns>.svc.cluster.local"`
-** where `<ns>` is namespace where postgres is installed
+** where _<ns>_ is namespace where postgres is installed
 * `dbserver1.DATABASE_PORT="5432"`
 * `dbserver1.DATABASE_SSL_ENABLE="False"`
 * `dbserver1.POSTGRESQL_SSL_CLIENT_SERVER="False"`
@@ -154,24 +154,24 @@ Enter following properties:
 This files includes LDAP connection information. The following entries assume https://github.com/samisalkosuo/activedirectory-demo[Samba Active Directory for demo purposes].
 
 * `LDAP_SERVER="<fqdn>"`
-** where <fqdn> is the host name of the LDAP server.
+** where _<fqdn>_ is the host name of the LDAP server.
 * `LDAP_PORT="<port>"`
-** where <port> is the port of the LDAP server.
+** where _<port>_ is the port of the LDAP server.
 * `LDAP_BASE_DN="dc=sirius,dc=com"`
 * `LDAP_BIND_DN="Administrator@sirius.com"`
 * `LDAP_BIND_DN_PASSWORD="{Base64}<base64 encoded password>"`
-** where <base64 encoded password> is LDAP server password.
+** where _<base64 encoded password>_ is LDAP server password.
 * `LDAP_SSL_ENABLED="True"`
 * `LDAP_SSL_CERT_FILE_FOLDER="<path>"`
-** where <path> is the directory where LDAP server certificate is found.
+** where _<path>_ is the directory where LDAP server certificate is found.
 ** certificate must be named: `ldap-cert.crt`.
-** execute: link:./ldap-cert/get-ldap-cert.sh[get-ldap-cert.sh] <ldap.server:port>` to download certificate to `ldap-cert`-directory.
+** execute: `./ldap-cert/get-ldap-cert.sh <ldap.server:port>` to download certificate to `ldap-cert`-directory.
 * `LDAP_GROUP_BASE_DN="dc=sirius,dc=com"`
 * `LDAP_GROUP_DISPLAY_NAME_ATTR="cn"`
 * `LC_AD_GC_HOST="<fqdn>"`
-** where <fqdn> is the host name of the LDAP server.
+** where _<fqdn>_ is the host name of the LDAP server.
 * `LC_AD_GC_PORT="<port>"`
-** where <port> is the port of the LDAP server.
+** where _<port>_ is the port of the LDAP server.
 
 === cp4ba_user_profile.property
 
@@ -200,9 +200,13 @@ The following shows properties that might be included. The same user, `dwells`, 
 * `APP_PLAYBACK.ADMIN_USER="dwells"`
 * `BASTUDIO.ADMIN_USER="dwells"`
 * `ADS.EXTERNAL_GIT_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-git?retryWrites=true&w=majority&authSource=admin"`
+** where _<ns>_ is namespace where MOngoDB is installed.
 * `ADS.EXTERNAL_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads?retryWrites=true&w=majority&authSource=admin"`
+** where _<ns>_ is namespace where MOngoDB is installed.
 * `ADS.EXTERNAL_MONGO_HISTORY_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-history?retryWrites=true&w=majority&authSource=admin"`
+** where _<ns>_ is namespace where MOngoDB is installed.
 * `ADS.EXTERNAL_RUNTIME_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-runtime-archive-metadata?retryWrites=true&w=majority&authSource=admin"`
+** where _<ns>_ is namespace where MOngoDB is installed.
 
 == CP4BA prerequisites - generate SQL and secrets
 
@@ -230,6 +234,9 @@ Since database is inside the cluster, verification needs to be done from CP4BA o
 This is documented https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=pycc-recommended-preparing-databases-secrets-your-chosen-capabilities-by-running-script and step 9. 
 
 Note that path to LDAP certificate is not included and path is incorrect when running inside operator so that needs to be changed.
+
+* Copy certificate to `/tmp/ldap-cert.crt`.
+* Change certificate path in `cp4ba_LDAP.property`-file.
 
 == CP4BA installation
 
