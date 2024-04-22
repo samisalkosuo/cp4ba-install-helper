@@ -112,6 +112,7 @@ dbserver1
 ```
 * Enter chosen namespace.
 * Do NOT restrict network egress.
+** Restrict only in production environments, if you know what you are doing.
 * Select 1 additional object store.
 * Select Yes as limited CPE storage support.
 ** If selecting No, it consumes licenses.
@@ -200,13 +201,13 @@ The following shows properties that might be included. The same user, `dwells`, 
 * `APP_PLAYBACK.ADMIN_USER="dwells"`
 * `BASTUDIO.ADMIN_USER="dwells"`
 * `ADS.EXTERNAL_GIT_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-git?retryWrites=true&w=majority&authSource=admin"`
-** where _<ns>_ is namespace where MOngoDB is installed.
+** where _<ns>_ is namespace where MongoDB is installed.
 * `ADS.EXTERNAL_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads?retryWrites=true&w=majority&authSource=admin"`
-** where _<ns>_ is namespace where MOngoDB is installed.
+** where _<ns>_ is namespace where MongoDB is installed.
 * `ADS.EXTERNAL_MONGO_HISTORY_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-history?retryWrites=true&w=majority&authSource=admin"`
-** where _<ns>_ is namespace where MOngoDB is installed.
+** where _<ns>_ is namespace where MongoDB is installed.
 * `ADS.EXTERNAL_RUNTIME_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-runtime-archive-metadata?retryWrites=true&w=majority&authSource=admin"`
-** where _<ns>_ is namespace where MOngoDB is installed.
+** where _<ns>_ is namespace where MongoDB is installed.
 
 == CP4BA prerequisites - generate SQL and secrets
 
@@ -216,11 +217,11 @@ After property files have been modified, helper script is used to generate SQL s
 * Execute:
 ** `./cp4a-prerequisites.sh -m generate`
 * SQL statement files and secret-files are created.
-* Create secrets:
-** Change to your chosen namespace.
+* Change to your chosen namespace.
 ** For example: `oc project ba`
-* Change to directory `cert-kubernetes/scripts/cp4ba-prerequisites`
-* Execute: `./create_secret.sh`
+* Create secrets:
+** Change to directory `cert-kubernetes/scripts/cp4ba-prerequisites`
+** Execute: `./create_secret.sh`
 ** This creates required secrets.
 * Execute: `./database/execute-cp4ba-postgresql-dbscripts.sh <ns> <cp4ba-prerequisites-directory>`
 ** This copies SQL scripts inside PostgreSQL container and executes them to create required database.
