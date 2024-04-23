@@ -121,8 +121,14 @@ dbserver1
 ** `cp4ba_db_server.property`
 ** `cp4ba_LDAP.property`
 ** `cp4ba_user_profile.property`
-* The next sections describe what to do with the property files.
+* The next section describes what to do with the property files.
 ** Property file content may vary, depending on the chosen capabilities.
+
+== CP4BA prerequisites - edit property files
+
+Prereq property files must be edited to include, for example, user names and password and database connection information.
+
+Follow instructions in this section to edit files manually or follow instructions in link:property-file-helpers[property-file-helpers]-directory to use scripts.
 
 === cp4ba_db_name_user.property
 
@@ -218,7 +224,7 @@ After property files have been modified, helper script is used to generate SQL s
 ** `./cp4a-prerequisites.sh -m generate`
 * SQL statement files and secret-files are created.
 * Change to your chosen namespace.
-** For example: `oc project ba`
+** For example: `oc project cp4ba`
 * Create secrets:
 ** Change to directory `cert-kubernetes/scripts/cp4ba-prerequisites`
 ** Execute: `./create_secret.sh`

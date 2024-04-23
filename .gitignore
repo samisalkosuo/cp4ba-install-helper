@@ -10,4 +10,4 @@ export-env.sh
 cert-kubernetes.tar
 .env
 .vscode/
-property-file-helpers
+property-file-helpers/test
