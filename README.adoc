@@ -58,7 +58,8 @@ Note: this can be used multiple times in multiple namespaces so you can install 
 ** OpenShift platform: private
 ** Deployment: production
 ** FIPS check: no
-** Private catalog: no
+** Private catalog: yes/no
+*** Select yes if you want catalog sources to be namespace scoped.
 ** Namespace: your chosen namespace
 ** Select user
 ** Enter registry key
