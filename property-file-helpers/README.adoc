@@ -1,6 +1,6 @@
 = Property file helper scripts
 
-These scripts create property files. Use with caution and with your own values.
+These scripts create and modify generated property files. Use with caution and with your own values.
 
 * Create _.env_ file with your own values:
 ```
