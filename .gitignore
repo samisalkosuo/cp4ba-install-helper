@@ -4,9 +4,10 @@ users.htpasswd
 htpasswd/*yaml
 5.*/
 execute-sql-in-container.sh
+run-sql-in-container.sh
 ldap-cert.crt
 export-env.sh
 cert-kubernetes.tar
 .env
 .vscode/
-properties/
+property-file-helpers

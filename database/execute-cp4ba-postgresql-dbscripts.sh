@@ -24,7 +24,7 @@ oc cp -c postgres $PREREQ_DIR/dbscript $NAMESPACE/postgres-0:/tmp/
 cd $SCRIPT_DIR
 
 #create script
-SCRIPT_FILE=execute-sql-in-container.sh
+SCRIPT_FILE=run-sql-in-container.sh
 cat > $SCRIPT_FILE << EOF
 
 function execute

@@ -16,6 +16,7 @@ set -e
 cd $VERSION_DIR
 set +e
 
+rm -f cert-kubernetes.tar
 tar -cf cert-kubernetes.tar cert-kubernetes/
 
 POD_NAME=$(oc get pods |grep cp4a-opera |awk '{print $1}')
