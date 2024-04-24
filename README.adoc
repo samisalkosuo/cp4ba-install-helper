@@ -4,7 +4,9 @@
 
 This repo includes helpful tools to install IBM Cloud Pak for Business Automation in a certain way, suitable for demonstrations and development.
 
-Based on documentation: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2. 
+The certain way of installation means CP4BA production installation where PostgreSQL and MongoDB installed on the same namespace and Active Directory is externally available.
+
+Installation is based on documentation: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2. 
 
 == Prepare for installation
 
