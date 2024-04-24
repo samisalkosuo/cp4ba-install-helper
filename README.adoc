@@ -79,14 +79,17 @@ MongoDB is used by ADS and optionally by ADP.
 
 * Install PostgreSQL to the same namespace as CP4BA
 * For example:
-** `./postgresql/install-postgresql.sh cp4ba`
+```
+./postgresql/install-postgresql.sh cp4ba
+```
 
 === MongoDB
 
 * Install MongoDB to the same namespace as CP4BA
 * For example:
-** `./mongodb/install-mongodb.sh cp4ba`
-
+```
+./mongodb/install-mongodb.sh cp4ba
+```
 
 == CP4BA prerequisites - create property files
 
@@ -94,7 +97,9 @@ CP4BA includes helper script to set up prereqs like secrets and database tables.
 
 * Go to directory `cert-kubernetes/scripts`.
 * Execute:
-** `./cp4a-prerequisites.sh -m property`
+```
+./cp4a-prerequisites.sh -m property
+```
 ** This script asks what to install and creates property files to be updated.
 * Follow the instructions in the script.
 * Select desired capabilities.
@@ -152,9 +157,15 @@ Database is PostgreSQL that was installed earlier.
 
 Enter following properties:
 
-* `dbserver1.DATABASE_SERVERNAME="postgres.<ns>.svc.cluster.local"`
-** where _<ns>_ is namespace where postgres is installed
-* `dbserver1.DATABASE_PORT="5432"`
+```
+dbserver1.DATABASE_SERVERNAME="postgres.<ns>.svc.cluster.local"
+```
+* where _<ns>_ is namespace where postgres is installed
+
+```
+dbserver1.DATABASE_PORT="5432"
+```
+
 * `dbserver1.DATABASE_SSL_ENABLE="False"`
 * `dbserver1.POSTGRESQL_SSL_CLIENT_SERVER="False"`
 * `dbserver1.DATABASE_SSL_CERT_FILE_FOLDER="/tmp"`
