@@ -19,7 +19,7 @@ set +e
 rm -f cert-kubernetes.tar
 tar -cf cert-kubernetes.tar cert-kubernetes/
 
-POD_NAME=$(oc get pods |grep cp4a-opera |awk '{print $1}')
+POD_NAME=$(oc get pods |grep -v cp4a-operator-catalog | grep cp4a-operator |awk '{print $1}')
 
 oc cp -c operator cert-kubernetes.tar $POD_NAME:/tmp/
 cd $SCRIPT_DIR/..
