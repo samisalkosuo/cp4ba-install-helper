@@ -1,21 +1,22 @@
 #!/bin/bash
 
 if [[ "$1" == "" ]]; then
-    echo "CP4BA PostgreSQL namespace is missing."
-    echo "Usage: $0 <namespace> <'cp4ba-prerequisites'-directory>"
+    echo "'cp4ba-prerequisites'-directory is missing."
+    echo "Usage: $0 <'cp4ba-prerequisites'-directory> <namespace>" 
     exit 1
 fi
 
 if [[ "$2" == "" ]]; then
-    echo "'cp4ba-prerequisites'-directory is missing."
-    echo "Usage: $0 <namespace> <'cp4ba-prerequisites'-directory>"
+    echo "CP4BA PostgreSQL namespace is missing."
+    echo "Usage: $0 <'cp4ba-prerequisites'-directory> <namespace>" 
     exit 1
 fi
 
 cdir=$(pwd)
 
-NAMESPACE=$1
-PREREQ_DIR=$2
+PREREQ_DIR=$1
+NAMESPACE=$2
+
 #get script dir
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
