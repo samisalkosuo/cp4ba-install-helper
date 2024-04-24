@@ -241,33 +241,101 @@ This files includes user information for CP4BA and other settings. Contents will
 The following shows properties that might be included. The same user, `dwells`, and password is used in all relevant entries.
 
 * Change all passwords `{Base64}<Required>` to `{Base64}<base64 encoded pwd>`
-* `CP4BA.CP4BA_LICENSE="non-production"`
-* `CP4BA.FNCM_LICENSE="non-production"`
-* `CP4BA.BAW_LICENSE="non-production"`
-* `CONTENT.APPLOGIN_USER="dwells"`
-* `CONTENT.ARCHIVE_USER_ID="dwells"`
-* `CONTENT_INITIALIZATION.LDAP_ADMIN_USER_NAME="dwells"`
-* `CONTENT_INITIALIZATION.LDAP_ADMINS_GROUPS_NAME="admin"`
-* `CONTENT_INITIALIZATION.CPE_OBJ_STORE_ADMIN_USER_GROUPS="admin"`
-* `CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_ADMIN_GROUP="admin"`
-* `CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_CONFIG_GROUP="admin"`
-* `CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_PE_CONN_POINT_NAME="pe_conn_point"`
-* `BAN.APPLOGIN_USER="dwells"`
-* `ADP.SERVICE_USER_NAME="cn=dwells,cn=users,dc=sirius,dc=com"`
-* `ADP.SERVICE_USER_NAME_BASE="cn=dwells,cn=users,dc=sirius,dc=com"`
-* `ADP.SERVICE_USER_NAME_CA="cn=dwells,cn=users,dc=sirius,dc=com"`
-* `ADP.ENV_OWNER_USER_NAME="cn=dwells,cn=users,dc=sirius,dc=com"`
-* `APP_ENGINE.ADMIN_USER="dwells"`
-* `APP_PLAYBACK.ADMIN_USER="dwells"`
-* `BASTUDIO.ADMIN_USER="dwells"`
-* `ADS.EXTERNAL_GIT_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-git?retryWrites=true&w=majority&authSource=admin"`
-** where _<ns>_ is namespace where MongoDB is installed.
-* `ADS.EXTERNAL_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads?retryWrites=true&w=majority&authSource=admin"`
-** where _<ns>_ is namespace where MongoDB is installed.
-* `ADS.EXTERNAL_MONGO_HISTORY_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-history?retryWrites=true&w=majority&authSource=admin"`
-** where _<ns>_ is namespace where MongoDB is installed.
-* `ADS.EXTERNAL_RUNTIME_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-runtime-archive-metadata?retryWrites=true&w=majority&authSource=admin"`
-** where _<ns>_ is namespace where MongoDB is installed.
+```
+CP4BA.CP4BA_LICENSE="non-production"
+```
+
+```
+CP4BA.FNCM_LICENSE="non-production"
+```
+
+```
+CP4BA.BAW_LICENSE="non-production"
+```
+
+```
+CONTENT.APPLOGIN_USER="dwells"
+```
+
+```
+CONTENT.ARCHIVE_USER_ID="dwells"
+```
+
+```
+CONTENT_INITIALIZATION.LDAP_ADMIN_USER_NAME="dwells"
+```
+
+```
+CONTENT_INITIALIZATION.LDAP_ADMINS_GROUPS_NAME="admin"
+```
+
+```
+CONTENT_INITIALIZATION.CPE_OBJ_STORE_ADMIN_USER_GROUPS="admin"
+```
+
+```
+CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_ADMIN_GROUP="admin"
+```
+
+```
+CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_CONFIG_GROUP="admin"
+```
+
+```
+CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_PE_CONN_POINT_NAME="pe_conn_point"
+```
+
+```
+BAN.APPLOGIN_USER="dwells"
+```
+
+```
+ADP.SERVICE_USER_NAME="cn=dwells,cn=users,dc=sirius,dc=com"
+```
+
+```
+ADP.SERVICE_USER_NAME_BASE="cn=dwells,cn=users,dc=sirius,dc=com"
+```
+
+```
+ADP.SERVICE_USER_NAME_CA="cn=dwells,cn=users,dc=sirius,dc=com"
+```
+
+```
+ADP.ENV_OWNER_USER_NAME="cn=dwells,cn=users,dc=sirius,dc=com"
+```
+
+```
+APP_ENGINE.ADMIN_USER="dwells"
+```
+
+```
+APP_PLAYBACK.ADMIN_USER="dwells"
+```
+
+```
+BASTUDIO.ADMIN_USER="dwells"
+```
+
+```
+ADS.EXTERNAL_GIT_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-git?retryWrites=true&w=majority&authSource=admin"`
+```
+* where _<ns>_ is namespace where MongoDB is installed.
+
+```
+ADS.EXTERNAL_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads?retryWrites=true&w=majority&authSource=admin"
+```
+* where _<ns>_ is namespace where MongoDB is installed.
+
+```
+ADS.EXTERNAL_MONGO_HISTORY_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-history?retryWrites=true&w=majority&authSource=admin"
+```
+* where _<ns>_ is namespace where MongoDB is installed.
+
+```
+ADS.EXTERNAL_RUNTIME_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-runtime-archive-metadata?retryWrites=true&w=majority&authSource=admin"
+```
+* where _<ns>_ is namespace where MongoDB is installed.
 
 == CP4BA prerequisites - generate SQL and secrets
 
@@ -275,16 +343,26 @@ After property files have been modified, helper script is used to generate SQL s
 
 * Go to directory `cert-kubernetes/scripts`.
 * Execute:
-** `./cp4a-prerequisites.sh -m generate`
+```
+./cp4a-prerequisites.sh -m generate
+```
+
 * SQL statement files and secret-files are created.
 * Change to your chosen namespace.
 ** For example: `oc project cp4ba`
 * Create secrets:
 ** Change to directory `cert-kubernetes/scripts/cp4ba-prerequisites`
-** Execute: `./create_secret.sh`
+** Execute:
+```
+./create_secret.sh
+```
+
 ** This creates required secrets.
-* Execute: `./database/execute-cp4ba-postgresql-dbscripts.sh <ns> <cp4ba-prerequisites-directory>`
-** This copies SQL scripts inside PostgreSQL container and executes them to create required database.
+* Execute: 
+```
+./database/execute-cp4ba-postgresql-dbscripts.sh <ns> <cp4ba-prerequisites-directory>
+```
+* This copies SQL scripts inside PostgreSQL container and executes them to create required database.
 ** Note: file not found errors mean that database scripts to not exists, so that capability was not chosen.
 
 == CP4BA prerequisites - validate
@@ -297,8 +375,10 @@ This is documented https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0
 Alternatively:
 
 * Execute: 
-** `./validate/validate-prereqs.sh <version>`
-** where _<version>_ is case version that was downloaded.
+```
+./validate/validate-prereqs.sh <version>`
+```
+* where _<version>_ is case version that was downloaded.
 ** Script packages _cert-kubernetes_-directory and copies files to operator pod.
 * Follow instructions in the script.
 
@@ -308,7 +388,10 @@ Now that prereqs are complete, we can install CP4BA.
 
 * Go to directory `cert-kubernetes/scripts`.
 * Execute:
-** `./cp4a-deployment.sh`
+```
+./cp4a-deployment.sh
+```
+
 * Accept license.
 * Select no when asked about Content CR.
 * Select Production deployment.
@@ -321,14 +404,22 @@ Now that prereqs are complete, we can install CP4BA.
 ** File is: `generated-cr/ibm_cp4a_cr_final.yaml`
 * Apply YAML:
 ** Change to chosen namespace.
-** `oc apply -f generated-cr/ibm_cp4a_cr_final.yaml`
+```
+oc apply -f generated-cr/ibm_cp4a_cr_final.yaml
+```
+
 
 == CP4BA installation - follow
 
 Follow the installation using OpenShift console and the following scripts.
 
-* `./cp4a-post-install.sh --Status`
-** Prints the status of the installation.
-* `./cp4a-post-install.sh --Console`
-** Prints various URLs of the installation.
+```
+./cp4a-post-install.sh --Status
+```
+* Prints the status of the installation.
+
+```
+./cp4a-post-install.sh --Console
+```
+* Prints various URLs of the installation.
 
