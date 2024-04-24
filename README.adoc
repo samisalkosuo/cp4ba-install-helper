@@ -52,7 +52,9 @@ Note: this can be used multiple times in multiple namespaces so you can install 
 
 * Go to directory `<version>/cert-kubernetes/scripts`.
 * Execute:
-** `./cp4a-clusteradmin-setup.sh`
+```
+./cp4a-clusteradmin-setup.sh
+```
 * Follow the instructions in the script.
 * For example, set following parameters:
 ** OpenShift platform: private
