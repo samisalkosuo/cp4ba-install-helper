@@ -166,33 +166,73 @@ dbserver1.DATABASE_SERVERNAME="postgres.<ns>.svc.cluster.local"
 dbserver1.DATABASE_PORT="5432"
 ```
 
-* `dbserver1.DATABASE_SSL_ENABLE="False"`
-* `dbserver1.POSTGRESQL_SSL_CLIENT_SERVER="False"`
-* `dbserver1.DATABASE_SSL_CERT_FILE_FOLDER="/tmp"`
+```
+dbserver1.DATABASE_SSL_ENABLE="False"
+```
+
+```
+dbserver1.POSTGRESQL_SSL_CLIENT_SERVER="False"
+```
+
+```
+dbserver1.DATABASE_SSL_CERT_FILE_FOLDER="/tmp"
+```
 
 === cp4ba_LDAP.property
 
 This files includes LDAP connection information. The following entries assume https://github.com/samisalkosuo/activedirectory-demo[Samba Active Directory for demo purposes].
 
-* `LDAP_SERVER="<fqdn>"`
-** where _<fqdn>_ is the host name of the LDAP server.
-* `LDAP_PORT="<port>"`
-** where _<port>_ is the port of the LDAP server.
-* `LDAP_BASE_DN="dc=sirius,dc=com"`
-* `LDAP_BIND_DN="Administrator@sirius.com"`
-* `LDAP_BIND_DN_PASSWORD="{Base64}<base64 encoded password>"`
-** where _<base64 encoded password>_ is LDAP server password.
-* `LDAP_SSL_ENABLED="True"`
-* `LDAP_SSL_CERT_FILE_FOLDER="<path>"`
-** where _<path>_ is the directory where LDAP server certificate is found.
+```
+LDAP_SERVER="<fqdn>"
+```
+* where _<fqdn>_ is the host name of the LDAP server.
+
+```
+LDAP_PORT="<port>"
+```
+* where _<port>_ is the port of the LDAP server.
+
+```
+LDAP_BASE_DN="dc=sirius,dc=com"
+```
+
+```
+LDAP_BIND_DN="Administrator@sirius.com"
+```
+
+```
+LDAP_BIND_DN_PASSWORD="{Base64}<base64 encoded password>"
+```
+* where _<base64 encoded password>_ is LDAP server password.
+```
+LDAP_SSL_ENABLED="True"
+```
+
+```
+LDAP_SSL_CERT_FILE_FOLDER="<path>"
+```
+* where _<path>_ is the directory where LDAP server certificate is found.
 ** certificate must be named: `ldap-cert.crt`.
 ** execute: `./ldap-cert/get-ldap-cert.sh <ldap.server:port>` to download certificate to `ldap-cert`-directory.
-* `LDAP_GROUP_BASE_DN="dc=sirius,dc=com"`
-* `LDAP_GROUP_DISPLAY_NAME_ATTR="cn"`
-* `LC_AD_GC_HOST="<fqdn>"`
-** where _<fqdn>_ is the host name of the LDAP server.
-* `LC_AD_GC_PORT="<port>"`
-** where _<port>_ is the port of the LDAP server.
+
+```
+LDAP_GROUP_BASE_DN="dc=sirius,dc=com"
+```
+
+```
+LDAP_GROUP_DISPLAY_NAME_ATTR="cn"
+```
+
+```
+LC_AD_GC_HOST="<fqdn>"
+```
+* where _<fqdn>_ is the host name of the LDAP server.
+
+```
+LC_AD_GC_PORT="<port>"
+```
+
+* where _<port>_ is the port of the LDAP server.
 
 === cp4ba_user_profile.property
 
