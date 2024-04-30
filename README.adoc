@@ -37,7 +37,7 @@ export LDAP_USER_PASSWORD="passw0rd"
 
 * _CP4BA_NAMESPACE_ is the namespace where CP4BA will be installed.
 * _CP4BA_CASE_VERSION_ is the case version. Check latest version from https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation.
-* _LDAP_BIND_PASSWORD_ and _LDAP_USER_PASSWORD_ are Active Directory passwords. They must be Base64 encoded.
+* _LDAP_BIND_PASSWORD_ and _LDAP_USER_PASSWORD_ are Active Directory passwords.
 
 == Install prerequirements
 
