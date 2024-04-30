@@ -1,0 +1,168 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {PREFIX}ad-demo-sa
+  namespace: {NAMESPACE}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-9"
+---
+kind: SecurityContextConstraints
+metadata:
+  annotations:
+    kubernetes.io/description: |- 
+      privileged allows access to all privileged and host
+      features and the ability to run as any user, any group, any fsGroup, and with
+      any SELinux context.  WARNING: this is the most relaxed SCC and should be used
+      only for cluster administration. Grant with caution.
+  creationTimestamp: null
+  name: {PREFIX}ad-demo-privileged-scc
+  namespace: {NAMESPACE}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-8"
+allowHostDirVolumePlugin: true
+allowHostIPC: true
+allowHostNetwork: true
+allowHostPID: true
+allowHostPorts: true
+allowPrivilegedContainer: true
+allowedCapabilities: 
+- '*'
+apiVersion: security.openshift.io/v1
+defaultAddCapabilities: [] 
+fsGroup: 
+  type: RunAsAny
+groups: 
+- system:cluster-admins
+- system:nodes
+priority: null
+readOnlyRootFilesystem: false
+requiredDropCapabilities: [] 
+runAsUser: 
+  type: RunAsAny
+seLinuxContext: 
+  type: RunAsAny
+seccompProfiles:
+- '*'
+supplementalGroups: 
+  type: RunAsAny
+users: 
+- system:serviceaccount:default:ad-demo-sa
+volumes:
+- '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {PREFIX}ad-demo-privileged-role
+  namespace: {NAMESPACE}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-7"
+rules:
+- apiGroups:
+  - security.openshift.io 
+  resourceNames:
+  - {PREFIX}ad-demo-privileged-scc
+  resources:
+  - securitycontextconstraints 
+  verbs: 
+  - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {PREFIX}ad-demo-rolebinding
+  namespace: {NAMESPACE}
+  annotations:
+    argocd.argoproj.io/sync-wave: "-7"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {PREFIX}ad-demo-privileged-role
+subjects:
+- kind: ServiceAccount
+  name: {PREFIX}ad-demo-sa
+  namespace: {NAMESPACE}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {PREFIX}ad-demo-environment-variables
+  namespace: {NAMESPACE}
+  labels:
+    app: {PREFIX}ad-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "-9"
+data:
+  #environment variables
+  DEFAULT_PASSWORD: passw0rd
+  SAMBA_ADMIN_PASSWORD: "S4m3aPassw@rd"
+  USERS: "staff:user1,user2,user3,user4,user5,user6,user7,user8,user9,user10;admin:cp4admin"
+  TLS_SAN: "{PREFIX}ad-demo-service.{NAMESPACE}.svc.cluster.local"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {PREFIX}ad-demo-deployment
+  namespace: {NAMESPACE}
+  labels:
+    app: {PREFIX}ad-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "-6"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {PREFIX}ad-demo
+  template:
+    metadata:
+      labels:
+        app: {PREFIX}ad-demo
+    spec:
+      serviceAccountName: {PREFIX}ad-demo-sa
+      serviceAccount: {PREFIX}ad-demo-sa
+      containers:
+      - name: {PREFIX}ad-demo
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1024M
+          requests:
+            cpu: 500m
+            memory: 1024M
+        image: kazhar/activedirectory-demo:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 636
+        envFrom:
+          - configMapRef:
+              name: {PREFIX}ad-demo-environment-variables
+        securityContext:
+#          runAsUser: 24816
+          privileged: true
+          # runAsNonRoot: true
+          # readOnlyRootFilesystem: false
+          # allowPrivilegeEscalation: true
+          # seccompProfile:
+          #   type: "RuntimeDefault"
+          #   # or "Localhost"
+          # capabilities:
+          #   drop:
+          #   - "ALL"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {PREFIX}ad-demo-service
+  namespace: {NAMESPACE}
+  labels:
+    app: {PREFIX}ad-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "-5"
+spec:
+  selector:
+    app: {PREFIX}ad-demo
+  ports:
+    - protocol: TCP
+      port: 636
+      targetPort: 636
+---

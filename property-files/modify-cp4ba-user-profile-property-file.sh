@@ -1,20 +1,26 @@
 #!/bin/bash
 
-if [[ "$CP4BA_PREREQ_DIRECTORY" == "" ]]; then
-    echo "CP4BA_PREREQ_DIRECTORY environment variable is missing."
-    exit 1
-fi
-
-if [[ "$LDAP_SERVER_PASSWORD" == "" ]]; then
-    echo "LDAP_SERVER_PASSWORD environment variable is missing."
-    exit 1
-fi
-
 if [[ "$CP4BA_NAMESPACE" == "" ]]; then
     echo "CP4BA_NAMESPACE environment variable is not set."
     exit 1
 fi
 
+if [[ "$CP4BA_CASE_VERSION" == "" ]]; then
+    echo "CP4BA_CASE_VERSION environment variable is not set."
+    exit 1
+fi
+
+if [[ "$LDAP_USER_PASSWORD" == "" ]]; then
+    echo "LDAP_USER_PASSWORD environment variable is not set."
+    exit 1
+fi
+
+#change password to base64 encoded
+BASE64_ENCODED_PWD=$(echo -n $LDAP_USER_PASSWORD | base64)
+LDAP_USER_PASSWORD="{Base64}$BASE64_ENCODED_PWD"
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+CP4BA_PREREQ_DIRECTORY=$SCRIPT_DIR/../$CP4BA_CASE_VERSION/cert-kubernetes/scripts/cp4ba-prerequisites
 USER_PROFILE_PROPERTY_FILE=$CP4BA_PREREQ_DIRECTORY/propertyfile/cp4ba_user_profile.property
 
 DEFAULT_USER=dwells
@@ -22,7 +28,7 @@ DEFAULT_GROUP=admin
 DEFAULT_USER_DN="cn=dwells,cn=users,dc=sirius,dc=com"
 
 #change all passwords
-sed -i "s/{Base64}<Required>/$LDAP_SERVER_PASSWORD/g" $USER_PROFILE_PROPERTY_FILE
+sed -i "s/{Base64}<Required>/$LDAP_USER_PASSWORD/g" $USER_PROFILE_PROPERTY_FILE
 #change required properties, check the file later to verify that all required properties are filled
 sed -i "s/CP4BA.CP4BA_LICENSE=\"<Required>\"/CP4BA.CP4BA_LICENSE=\"non-production\"/g" $USER_PROFILE_PROPERTY_FILE
 sed -i "s/CP4BA.FNCM_LICENSE=\"<Required>\"/CP4BA.FNCM_LICENSE=\"non-production\"/g" $USER_PROFILE_PROPERTY_FILE
@@ -56,4 +62,3 @@ if [[ "$REQUIRED_PROPERTIES" != "" ]]; then
     echo $REQUIRED_PROPERTIES
     exit 1
 fi
-

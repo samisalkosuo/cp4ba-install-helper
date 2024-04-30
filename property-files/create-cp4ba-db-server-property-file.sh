@@ -5,11 +5,13 @@ if [[ "$CP4BA_NAMESPACE" == "" ]]; then
     exit 1
 fi
 
-if [[ "$CP4BA_PREREQ_DIRECTORY" == "" ]]; then
-    echo "CP4BA_PREREQ_DIRECTORY environment variable is missing."
+if [[ "$CP4BA_CASE_VERSION" == "" ]]; then
+    echo "CP4BA_CASE_VERSION environment variable is not set."
     exit 1
 fi
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+CP4BA_PREREQ_DIRECTORY=$SCRIPT_DIR/../$CP4BA_CASE_VERSION/cert-kubernetes/scripts/cp4ba-prerequisites
 DB_SERVER_PROPERTY_FILE=$CP4BA_PREREQ_DIRECTORY/propertyfile/cp4ba_db_server.property
 
 #create DB server property file
@@ -25,7 +27,7 @@ DB_SERVER_LIST="dbserver1"
 dbserver1.DATABASE_TYPE="postgresql"
 
 ## Provide the database server name or IP address of the database server.
-dbserver1.DATABASE_SERVERNAME="postgres.$CP4BA_NAMESPACE.svc.cluster.local"
+dbserver1.DATABASE_SERVERNAME="prereq-cp4ba-postgres.$CP4BA_NAMESPACE.svc.cluster.local"
 
 ## Provide the database server port. For Db2, the default is "50000". For Oracle, the default is "1521". For Postgresql, the default is "5432".
 dbserver1.DATABASE_PORT="5432"

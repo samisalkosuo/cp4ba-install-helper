@@ -1,7 +1,7 @@
 kind: ServiceAccount
 apiVersion: v1
 metadata:
-  name: config-service-account
+  name: {PREFIX}config-service-account
   namespace: {NAMESPACE}
   annotations:
     argocd.argoproj.io/sync-wave: "-9"
@@ -10,13 +10,13 @@ metadata:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: update-config-crb
+  name: {PREFIX}update-config-crb
   namespace: {NAMESPACE}
   annotations:
     argocd.argoproj.io/sync-wave: "-8"
 subjects:
   - kind: ServiceAccount
-    name: config-service-account
+    name: {PREFIX}config-service-account
     namespace: {NAMESPACE}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -27,7 +27,7 @@ roleRef:
 kind: ConfigMap
 apiVersion: v1
 metadata:
-  name: config-configmap
+  name: {PREFIX}config-configmap
   namespace: {NAMESPACE}
   annotations:
     argocd.argoproj.io/sync-wave: "-8"
@@ -36,11 +36,10 @@ data:
   configure.sh: |
     oc adm policy add-scc-to-user anyuid -z default -n {NAMESPACE}
 ---
-#job to update global pull secret
 kind: Job
 apiVersion: batch/v1
 metadata:
-  name: config-job
+  name: {PREFIX}postgres-config-job
   namespace: {NAMESPACE}
   annotations:
     argocd.argoproj.io/hook: Sync
@@ -55,6 +54,13 @@ spec:
       containers:
         - name: configure
           image: "registry.redhat.io/openshift4/ose-cli:latest"
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128M
+            requests:
+              cpu: 500m
+              memory: 128M
           command:
             - "/bin/bash"
             - "/etc/config/configure.sh"
@@ -64,17 +70,17 @@ spec:
       volumes:
         - name: "script-volume"
           configMap:
-            name: "config-configmap"
+            name: "{PREFIX}config-configmap"
       restartPolicy: "Never"
       terminationGracePeriodSeconds: 30
       activeDeadlineSeconds: 500
       dnsPolicy: "ClusterFirst"
-      serviceAccountName: "config-service-account"
+      serviceAccountName: "{PREFIX}config-service-account"
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgres-conf
+  name: {PREFIX}postgres-conf
   namespace: {NAMESPACE}
 data:
   postgresql.conf: |
@@ -907,45 +913,52 @@ kind: Secret
 apiVersion: v1
 type: Opaque
 metadata:
-  name: postgres-secret
+  name: {PREFIX}postgres-secret
   namespace: {NAMESPACE}
   labels:
-    app: postgres
-data:
-  password: cGFzc3cwcmQ=
+    app: {PREFIX}postgres
+stringData:
+  password: passw0rd
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres 
+  name: {PREFIX}postgres 
   namespace: {NAMESPACE}
   labels:
-    app: postgres
+    app: {PREFIX}postgres
 spec:
   selector:
-    app: postgres
+    app: {PREFIX}postgres
   ports:
     - port: 5432
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres
+  name: {PREFIX}postgres
   namespace: {NAMESPACE}
 spec:
-  serviceName: postgres
+  serviceName: {PREFIX}postgres
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: {PREFIX}postgres
   template:
     metadata:
       labels:
-        app: postgres
+        app: {PREFIX}postgres
     spec:
       initContainers:      
-      - name: chmod-postgres-dirs
+      - name: {PREFIX}chmod-postgres-dirs
         image: busybox:latest
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128M
+          requests:
+            cpu: 500m
+            memory: 128M
         #create directories and change owner of db directories
         command: ["/bin/sh"]
         args:
@@ -967,10 +980,10 @@ spec:
               mkdir -p pgsqldata/os5db &&
               /bin/chown -R 999 /pgsqldata
         volumeMounts:
-        - name: postgres-data
+        - name: {PREFIX}postgres-data
           mountPath: /pgsqldata
       containers:
-        - name: postgres
+        - name: {PREFIX}postgres
           securityContext:
             #user 999 is defined in postgres container
             fsGroup: 999
@@ -978,13 +991,20 @@ spec:
             runAsGroup: 999            
           image: docker.io/library/postgres:16.2
           args: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
+          resources:
+            limits:
+              cpu: 4000m
+              memory: 8192M
+            requests:
+              cpu: 500m
+              memory: 2048M
           env:
             - name: POSTGRES_USER 
               value: postgres
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
+                  name: {PREFIX}postgres-secret
                   key: password
             - name: PGDATA
               value: /pgsqldata/pgdata
@@ -992,14 +1012,14 @@ spec:
             - containerPort: 5432
               name: postgres
           volumeMounts:
-            - name: postgres-data
+            - name: {PREFIX}postgres-data
               mountPath: /pgsqldata/
-            - name: postgres-config
+            - name: {PREFIX}postgres-config
               mountPath: /etc/postgresql            
       volumes:
-        - name: postgres-config
+        - name: {PREFIX}postgres-config
           configMap:
-            name: postgres-conf
+            name: {PREFIX}postgres-conf
             items:
             - key: postgresql.conf
               path: postgresql.conf
@@ -1007,7 +1027,7 @@ spec:
     - kind: PersistentVolumeClaim
       apiVersion: v1
       metadata:
-        name: postgres-data
+        name: {PREFIX}postgres-data
       spec:
         accessModes:
           - ReadWriteOnce

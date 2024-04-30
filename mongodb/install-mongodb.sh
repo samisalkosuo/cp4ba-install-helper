@@ -41,7 +41,11 @@ function configuration
     #create postgresql statefulset
     YAML_FILE=$CONFIG_FILE
     #change all occurrences of namespace
-    sed "s/{NAMESPACE}/${NAMESPACE}/" ${YAML_FILE} > $TEMP_FILE
+    sed "s/{NAMESPACE}/${NAMESPACE}/" ${YAML_FILE} > ${TEMP_FILE}2
+
+    local PREFIX="prereq-cp4ba-"
+    sed "s/{PREFIX}/${PREFIX}/" ${TEMP_FILE}2 > $TEMP_FILE
+
 
     oc $OP -f $TEMP_FILE
 

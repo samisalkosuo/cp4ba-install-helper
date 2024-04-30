@@ -2,7 +2,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: mongodb-pvc
+  name: {PREFIX}mongodb-pvc
   namespace: {NAMESPACE}
 spec:
   storageClassName: ocs-storagecluster-cephfs
@@ -16,7 +16,7 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: mongodb-secret
+  name: {PREFIX}mongodb-secret
   namespace: {NAMESPACE}
 type: Opaque
 stringData:
@@ -26,7 +26,7 @@ stringData:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: mongodb-configmap
+  name: {PREFIX}mongodb-configmap
   namespace: {NAMESPACE}
 data:
   mongo.conf: |
@@ -36,23 +36,29 @@ data:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: mongodb
+  name: {PREFIX}mongodb
   namespace: {NAMESPACE}
 spec:
-  serviceName: mongodb-svc
+  serviceName: {PREFIX}mongodb-svc
   replicas: 1
   selector:
     matchLabels:
-      app: mongodb
+      app: {PREFIX}mongodb
   template:
     metadata:
       labels:
-        app: mongodb
-        #selector: mongodb
+        app: {PREFIX}mongodb
     spec:
       containers:
-      - name: mongodb
+      - name: {PREFIX}mongodb
         image: mongo:5
+        resources:
+          limits:
+            cpu: 2000m
+            memory: 4096M
+          requests:
+            cpu: 500m
+            memory: 1024M
         env:
           - name: MONGO_INITDB_ROOT_USERNAME_FILE
             value: /etc/k8-test/MONGO_ROOT_USERNAME
@@ -62,15 +68,15 @@ spec:
         - name: k8-test
           mountPath: /etc/k8-test
           readOnly: true
-        - name: mongodb-configmap
+        - name: {PREFIX}mongodb-configmap
           mountPath: /config
           readOnly: true
-        - name: mongodb-data
+        - name: {PREFIX}mongodb-data
           mountPath: /data/db
       volumes:
       - name: k8-test
         secret:
-          secretName: mongodb-secret
+          secretName: {PREFIX}mongodb-secret
           items:
           - key: MONGO_ROOT_USERNAME
             path: MONGO_ROOT_USERNAME
@@ -78,26 +84,25 @@ spec:
           - key: MONGO_ROOT_PASSWORD
             path: MONGO_ROOT_PASSWORD
             mode: 0444
-      - name: mongodb-configmap
+      - name: {PREFIX}mongodb-configmap
         configMap:
-          name: mongodb-configmap
+          name: {PREFIX}mongodb-configmap
           items:
           - key: mongo.conf
             path: mongo.conf
-      - name: mongodb-data
+      - name: {PREFIX}mongodb-data
         persistentVolumeClaim:
-          claimName: mongodb-pvc
+          claimName: {PREFIX}mongodb-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongodb-svc
+  name: {PREFIX}mongodb-svc
   namespace: {NAMESPACE}
   labels:
-    app: mongodb
+    app: {PREFIX}mongodb
 spec:
-  clusterIP: None
   selector:
-    app: mongodb
+    app: {PREFIX}mongodb
   ports:
     - port: 27017

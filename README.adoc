@@ -2,9 +2,9 @@
 :toc: left
 :toc-title: Table of Contents
 
-This repo includes helpful tools to install IBM Cloud Pak for Business Automation in a certain way, suitable for demonstrations and development.
+This repo includes instructions and scripts to install IBM Cloud Pak for Business Automation in a certain way, suitable for demonstrations and development.
 
-The certain way of installation means CP4BA production installation where PostgreSQL and MongoDB installed on the same namespace and Active Directory is externally available.
+The certain way of installation means CP4BA production installation where Active Directory, PostgreSQL and MongoDB are installed on the same namespace.
 
 Installation is based on documentation: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2. 
 
@@ -12,47 +12,71 @@ Installation is based on documentation: https://www.ibm.com/docs/en/cloud-paks/c
 
 * OpenShift cluster and cluster admin access to it.
 ** OpenShift 4.14 is supported by https://www.ibm.com/support/pages/node/7128178[CP4BA 23.0.2 IF003].
-* Active Directory available and accessible.
-** LDAP used  in these installations is Samba Active Directory (same functionality as Microsoft Active Directory) and implemented by https://github.com/samisalkosuo/activedirectory-demo.
 * Get IBM entitlement key from https://myibm.ibm.com/products-services/containerlibrary.
 * Clone or download this repository to your workstation or server.
-** These scripts have been tested with Rocky Linux 9.3.
+** These scripts have been tested with Rocky Linux 9.3 running inside https://github.com/samisalkosuo/devcon[container].
 
 == Create user
 
 CP4BA installation asks for user during installation. If not already available, you may use script link:htpasswd/htpasswd-util.sh[htpasswd-util.sh] to create htpasswd provider and add/remove users.
 
-* Create htpasswd provider and cladmin-user.
+* Create htpasswd provider and _cladmin_-user.
 ```
 ./htpasswd-util.sh create
 ```
+
+== Set up environment variables
+
+* Export these environment variables:
+```
+export CP4BA_NAMESPACE=cp4ba
+export CP4BA_CASE_VERSION=5.1.4
+export LDAP_BIND_PASSWORD="S4m3aPassw@rd"
+export LDAP_USER_PASSWORD="passw0rd"
+```
+
+* _CP4BA_NAMESPACE_ is the namespace where CP4BA will be installed.
+* _CP4BA_CASE_VERSION_ is the case version. Check latest version from https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation.
+* _LDAP_BIND_PASSWORD_ and _LDAP_USER_PASSWORD_ are Active Directory passwords. They must be Base64 encoded.
+
+== Install prerequirements
+
+CP4BA requires LDAP and databases.
+
+* This script installs Active Directory, PostgreSQL and MongoDB.
+
+```
+./install-cp4ba-prereqs.sh
+```
+
+* PostgreSQL is used by all capabilities.
+* MongoDB is required by ADS and optional by ADP.
+
+=== Active Directory demo
+
+Active Directory used in here is Samba Active Directory (same functionality as Microsoft Active Directory) and implemented by https://github.com/samisalkosuo/activedirectory-demo.
 
 == Download case file
 
 CP4BA case file is published to GitHub. Check latest version from https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation.
 
-Download latest case file using script:
+Download case file using script:
 
 ```
-./download-cp4ba-case-file.sh 5.1.3
+./download-cp4ba-case-file.sh
 ```
 
-* `5.1.3` is the version to be downloaded.
+* The case version was specified earlier in _CP4BA_CASE_VERSION_ environment variable.
 * Script downloads and extracts the file to `<version>/cert-kubernetes`
 * `<version>/cert-kubernetes/scripts` includes scripts that will be used.
-
-== Decide namespace
-
-* Decide namespace where CP4BA will be installed.
-* Namespace is used later in the scripts.
 
 == Cluster setup
 
 Cluster setup installs, if not already installed, necessary operator catalogs,IBM Certificate Manager and IBM Licensing cluster-wide services as well as CP4BA operators to chosen namespace.
 
-Note: this can be used multiple times in multiple namespaces so you can install CP4BA multiple times in the same cluster.
+Note: this can be used multiple times in multiple namespaces so you can install CP4BA multiple times in the same cluster. Remember to modify environment variables when installing to a new namespace.
 
-* Go to directory `<version>/cert-kubernetes/scripts`.
+* Go to directory `$CP4BA_CASE_VERSION/cert-kubernetes/scripts`.
 * Execute:
 ```
 ./cp4a-clusteradmin-setup.sh
@@ -64,47 +88,24 @@ Note: this can be used multiple times in multiple namespaces so you can install 
 ** FIPS check: no
 ** Private catalog: yes/no
 *** Select yes if you want catalog sources to be namespace scoped.
-** Namespace: your chosen namespace
+** Namespace: your chosen namespace 
 ** Select user
 ** Enter registry key
 * Wait until operators are installed
-
-== Databases
-
-CP4BA production install requires external databases. 
-
-PostgreSQL is used by all capabilities.
-
-MongoDB is used by ADS and optionally by ADP.
-
-=== PostgreSQL
-
-* Install PostgreSQL to the same namespace as CP4BA
-* For example:
-```
-./postgresql/install-postgresql.sh cp4ba
-```
-
-=== MongoDB
-
-* Install MongoDB to the same namespace as CP4BA
-* For example:
-```
-./mongodb/install-mongodb.sh cp4ba
-```
 
 == CP4BA prerequisites - create property files
 
 CP4BA includes helper script to set up prereqs like secrets and database tables.
 
-* Go to directory `cert-kubernetes/scripts`.
+* Go to directory `$CP4BA_CASE_VERSION/cert-kubernetes/scripts`.
 * Execute:
 ```
 ./cp4a-prerequisites.sh -m property
 ```
-** This script asks what to install and creates property files to be updated.
+* This script asks what to install and creates property files to be updated.
 * Follow the instructions in the script.
 * Select desired capabilities.
+** See for example https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=deployment-capability-patterns-production-deployments[here].
 * Select Microsoft Active Directory as LDAP.
 * RWX storage: 
 ```
@@ -121,7 +122,7 @@ ocs-storagecluster-ceph-rbd
 dbserver1
 ```
 * Enter chosen namespace.
-* Do NOT restrict network egress.
+* Do not restrict network egress.
 ** Restrict only in production environments, if you know what you are doing.
 * Select 1 additional object store.
 * Select Yes as limited CPE storage support.
@@ -132,218 +133,19 @@ dbserver1
 ** `cp4ba_LDAP.property`
 ** `cp4ba_user_profile.property`
 * The next section describes what to do with the property files.
-** Property file content may vary, depending on the chosen capabilities.
+** Property file content varies, depending on the chosen capabilities.
 
 == CP4BA prerequisites - edit property files
 
 Prereq property files must be edited to include, for example, user names and password and database connection information.
 
-Follow instructions in this section to edit files manually or follow instructions in link:property-file-helpers[property-file-helpers]-directory to use scripts.
-
-=== cp4ba_db_name_user.property
-
-This file includes databases, user names and passwords for selected capabilities.
-Database is PostgreSQL that was installed earlier.
-
-* Open the file and review it.
-* Change all `<youruser1>` to `postgres`.
-* Change all `{Base64}<yourpassword>` to `passw0rd`.
-* Change all `<youruser2>` to `postgres`.
-* Change all `{Base64}<yourpassword1>` to `passw0rd`.
-* Change all `{Base64}<yourpassword2>` to `passw0rd`.
-
-=== cp4ba_db_server.property
-
-This file includes connection information to the database.
-Database is PostgreSQL that was installed earlier.
-
-Enter following properties:
-
-```
-dbserver1.DATABASE_SERVERNAME="postgres.<ns>.svc.cluster.local"
-```
-* where _<ns>_ is namespace where postgres is installed
-
-```
-dbserver1.DATABASE_PORT="5432"
-```
-
-```
-dbserver1.DATABASE_SSL_ENABLE="False"
-```
-
-```
-dbserver1.POSTGRESQL_SSL_CLIENT_SERVER="False"
-```
-
-```
-dbserver1.DATABASE_SSL_CERT_FILE_FOLDER="/tmp"
-```
-
-=== cp4ba_LDAP.property
-
-This files includes LDAP connection information. The following entries assume https://github.com/samisalkosuo/activedirectory-demo[Samba Active Directory for demo purposes].
-
-```
-LDAP_SERVER="<fqdn>"
-```
-* where _<fqdn>_ is the host name of the LDAP server.
-
-```
-LDAP_PORT="<port>"
-```
-* where _<port>_ is the port of the LDAP server.
-
-```
-LDAP_BASE_DN="dc=sirius,dc=com"
-```
-
-```
-LDAP_BIND_DN="Administrator@sirius.com"
-```
-
-```
-LDAP_BIND_DN_PASSWORD="{Base64}<base64 encoded password>"
-```
-* where _<base64 encoded password>_ is LDAP server password.
-```
-LDAP_SSL_ENABLED="True"
-```
-
-```
-LDAP_SSL_CERT_FILE_FOLDER="<path>"
-```
-* where _<path>_ is the directory where LDAP server certificate is found.
-** certificate must be named: `ldap-cert.crt`.
-** execute: `./ldap-cert/get-ldap-cert.sh <ldap.server:port>` to download certificate to `ldap-cert`-directory.
-
-```
-LDAP_GROUP_BASE_DN="dc=sirius,dc=com"
-```
-
-```
-LDAP_GROUP_DISPLAY_NAME_ATTR="cn"
-```
-
-```
-LC_AD_GC_HOST="<fqdn>"
-```
-* where _<fqdn>_ is the host name of the LDAP server.
-
-```
-LC_AD_GC_PORT="<port>"
-```
-
-* where _<port>_ is the port of the LDAP server.
-
-=== cp4ba_user_profile.property
-
-This files includes user information for CP4BA and other settings. Contents will vary depending on chosen capabilities.
-
-The following shows properties that might be included. The same user, `dwells`, and password is used in all relevant entries.
-
-* Change all passwords `{Base64}<Required>` to `{Base64}<base64 encoded pwd>`
-```
-CP4BA.CP4BA_LICENSE="non-production"
-```
-
-```
-CP4BA.FNCM_LICENSE="non-production"
-```
-
-```
-CP4BA.BAW_LICENSE="non-production"
-```
-
-```
-CONTENT.APPLOGIN_USER="dwells"
-```
-
-```
-CONTENT.ARCHIVE_USER_ID="dwells"
-```
-
-```
-CONTENT_INITIALIZATION.LDAP_ADMIN_USER_NAME="dwells"
-```
-
-```
-CONTENT_INITIALIZATION.LDAP_ADMINS_GROUPS_NAME="admin"
-```
-
-```
-CONTENT_INITIALIZATION.CPE_OBJ_STORE_ADMIN_USER_GROUPS="admin"
-```
-
-```
-CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_ADMIN_GROUP="admin"
-```
-
-```
-CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_CONFIG_GROUP="admin"
-```
-
-```
-CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_PE_CONN_POINT_NAME="pe_conn_point"
-```
-
-```
-BAN.APPLOGIN_USER="dwells"
-```
-
-```
-ADP.SERVICE_USER_NAME="cn=dwells,cn=users,dc=sirius,dc=com"
-```
-
-```
-ADP.SERVICE_USER_NAME_BASE="cn=dwells,cn=users,dc=sirius,dc=com"
-```
-
-```
-ADP.SERVICE_USER_NAME_CA="cn=dwells,cn=users,dc=sirius,dc=com"
-```
-
-```
-ADP.ENV_OWNER_USER_NAME="cn=dwells,cn=users,dc=sirius,dc=com"
-```
-
-```
-APP_ENGINE.ADMIN_USER="dwells"
-```
-
-```
-APP_PLAYBACK.ADMIN_USER="dwells"
-```
-
-```
-BASTUDIO.ADMIN_USER="dwells"
-```
-
-```
-ADS.EXTERNAL_GIT_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-git?retryWrites=true&w=majority&authSource=admin"`
-```
-* where _<ns>_ is namespace where MongoDB is installed.
-
-```
-ADS.EXTERNAL_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads?retryWrites=true&w=majority&authSource=admin"
-```
-* where _<ns>_ is namespace where MongoDB is installed.
-
-```
-ADS.EXTERNAL_MONGO_HISTORY_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-history?retryWrites=true&w=majority&authSource=admin"
-```
-* where _<ns>_ is namespace where MongoDB is installed.
-
-```
-ADS.EXTERNAL_RUNTIME_MONGO_URI="mongodb://admin:passw0rd@mongodb-svc.<ns>.svc.cluster.local:27017/ads-runtime-archive-metadata?retryWrites=true&w=majority&authSource=admin"
-```
-* where _<ns>_ is namespace where MongoDB is installed.
+Follow instructions in link:property-files[property-files]-directory to edit property files either manually or using scripts.
 
 == CP4BA prerequisites - generate SQL and secrets
 
-After property files have been modified, helper script is used to generate SQL statements and secrets
+After the property files have been modified, _cp4a-prerequisites.sh_-script is used to generate SQL statements and secrets.
 
-* Go to directory `cert-kubernetes/scripts`.
+* Go to directory `$CP4BA_CASE_VERSION/cert-kubernetes/scripts`.
 * Execute:
 ```
 ./cp4a-prerequisites.sh -m generate
@@ -352,25 +154,28 @@ After property files have been modified, helper script is used to generate SQL s
 * SQL statement files and secret-files are created.
 * Change to your chosen namespace.
 ** For example: `oc project cp4ba`
-* Create secrets:
-** Change to directory `cert-kubernetes/scripts/cp4ba-prerequisites`
-** Execute:
+
+=== Create secrets
+
+* Change to directory `cp4ba-prerequisites`
+* Execute:
 ```
 ./create_secret.sh
 ```
+* This creates required secrets.
 
-** This creates required secrets.
+=== Create databases
+
 * Execute: 
 ```
-./database/execute-cp4ba-postgresql-dbscripts.sh <ns> <cp4ba-prerequisites-directory>
+./database/execute-cp4ba-postgresql-dbscripts.sh
 ```
-* This copies SQL scripts inside PostgreSQL container and executes them to create required database.
-** Note: file not found errors mean that database scripts to not exists, so that capability was not chosen.
+* This copies SQL scripts inside PostgreSQL container and executes them to create required databases.
 
 == CP4BA prerequisites - validate
 
-This step is optional. Validation uses cp4a-prerequisites.sh script to verify that secrets and databases are created.
-Since database is inside the cluster, verification needs to be done from CP4BA operation container.
+This step is optional. Validation uses _cp4a-prerequisites.sh_-script to verify that secrets and databases are created.
+Since database is inside the cluster, verification needs to be done from CP4BA operator container.
 
 This is documented https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=pycc-recommended-preparing-databases-secrets-your-chosen-capabilities-by-running-script and step 9. 
 
@@ -378,10 +183,9 @@ Alternatively:
 
 * Execute: 
 ```
-./validate/validate-prereqs.sh <version>`
+./validate/validate-prereqs.sh
 ```
-* where _<version>_ is case version that was downloaded.
-** Script packages _cert-kubernetes_-directory and copies files to operator pod.
+* Script packages _cert-kubernetes_-directory and copies files to operator pod.
 * Follow instructions in the script.
 
 == CP4BA installation
@@ -420,8 +224,11 @@ Follow the installation using OpenShift console and the following scripts.
 ```
 * Prints the status of the installation.
 
+
+== CP4BA installation - done
+
+When installation is complete, you can check username, password and URLs using the following command.
+
 ```
 ./cp4a-post-install.sh --Console
 ```
-* Prints various URLs of the installation.
-

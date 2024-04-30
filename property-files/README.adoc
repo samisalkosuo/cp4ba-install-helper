@@ -1,0 +1,219 @@
+= Property files
+
+Edit property files either by using scripts or manually.
+
+== Helper scripts
+
+These scripts create and modify generated property files. Use with caution.
+
+* Scripts use environment variables for namespace, case version and LDAP passwords.
+* Execute scripts to modify property files:
+```
+./modify-cp4ba-db-name-user-property-file.sh
+./create-cp4ba-db-server-property-file.sh
+./create-cp4ba-LDAP-property-file.sh
+./modify-cp4ba-user-profile-property-file.sh
+```
+* Verify property files.
+
+== Manual configuration
+
+This section describes how to edit property files manually.
+
+=== cp4ba_db_name_user.property
+
+This file includes databases, user names and passwords for selected capabilities.
+Database is PostgreSQL that was installed earlier.
+
+* Open the file and review it.
+* Change all `<youruser1>` to `postgres`.
+* Change all `{Base64}<yourpassword>` to `passw0rd`.
+* Change all `<youruser2>` to `postgres`.
+* Change all `{Base64}<yourpassword1>` to `passw0rd`.
+* Change all `{Base64}<yourpassword2>` to `passw0rd`.
+
+=== cp4ba_db_server.property
+
+This file includes connection information to the database.
+Database is PostgreSQL that was installed earlier.
+
+Enter following properties:
+
+```
+dbserver1.DATABASE_SERVERNAME="prereq-cp4ba-postgres.<ns>.svc.cluster.local"
+```
+* where _<ns>_ is namespace where postgres is installed.
+
+```
+dbserver1.DATABASE_PORT="5432"
+```
+
+```
+dbserver1.DATABASE_SSL_ENABLE="False"
+```
+
+```
+dbserver1.POSTGRESQL_SSL_CLIENT_SERVER="False"
+```
+
+```
+dbserver1.DATABASE_SSL_CERT_FILE_FOLDER="/tmp"
+```
+
+=== cp4ba_LDAP.property
+
+This files includes LDAP connection information. The following entries assume https://github.com/samisalkosuo/activedirectory-demo[Samba Active Directory for demo purposes].
+
+```
+LDAP_SERVER="prereq-cp4ba-ad-demo-service.<ns>.svc.cluster.local"
+```
+* where _<ns>_ is namespace where AD is installed.
+
+```
+LDAP_PORT="636"
+```
+
+```
+LDAP_BASE_DN="dc=sirius,dc=com"
+```
+
+```
+LDAP_BIND_DN="Administrator@sirius.com"
+```
+
+```
+LDAP_BIND_DN_PASSWORD="{Base64}<base64 encoded password>"
+```
+* where _<base64 encoded password>_ is LDAP server password.
+```
+LDAP_SSL_ENABLED="True"
+```
+
+```
+LDAP_SSL_CERT_FILE_FOLDER="<path>"
+```
+* where _<path>_ is the directory where LDAP server certificate or CA certificate is found.
+* certificate must be named: `ldap-cert.crt`.
+
+```
+LDAP_GROUP_BASE_DN="dc=sirius,dc=com"
+```
+
+```
+LDAP_GROUP_DISPLAY_NAME_ATTR="cn"
+```
+
+```
+LC_AD_GC_HOST="<fqdn>"
+```
+* where _<fqdn>_ is the host name of the LDAP server.
+
+```
+LC_AD_GC_PORT="<port>"
+```
+
+* where _<port>_ is the port of the LDAP server.
+
+=== cp4ba_user_profile.property
+
+This files includes user information for CP4BA and other settings. Contents will vary depending on chosen capabilities.
+
+The following shows properties that might be included. The same user, `dwells`, and password is used in all relevant entries.
+
+* Change all passwords `{Base64}<Required>` to `{Base64}<base64 encoded pwd>`
+```
+CP4BA.CP4BA_LICENSE="non-production"
+```
+
+```
+CP4BA.FNCM_LICENSE="non-production"
+```
+
+```
+CP4BA.BAW_LICENSE="non-production"
+```
+
+```
+CONTENT.APPLOGIN_USER="dwells"
+```
+
+```
+CONTENT.ARCHIVE_USER_ID="dwells"
+```
+
+```
+CONTENT_INITIALIZATION.LDAP_ADMIN_USER_NAME="dwells"
+```
+
+```
+CONTENT_INITIALIZATION.LDAP_ADMINS_GROUPS_NAME="admin"
+```
+
+```
+CONTENT_INITIALIZATION.CPE_OBJ_STORE_ADMIN_USER_GROUPS="admin"
+```
+
+```
+CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_ADMIN_GROUP="admin"
+```
+
+```
+CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_CONFIG_GROUP="admin"
+```
+
+```
+CONTENT_INITIALIZATION.CPE_OBJ_STORE_WORKFLOW_PE_CONN_POINT_NAME="pe_conn_point"
+```
+
+```
+BAN.APPLOGIN_USER="dwells"
+```
+
+```
+ADP.SERVICE_USER_NAME="cn=dwells,cn=users,dc=sirius,dc=com"
+```
+
+```
+ADP.SERVICE_USER_NAME_BASE="cn=dwells,cn=users,dc=sirius,dc=com"
+```
+
+```
+ADP.SERVICE_USER_NAME_CA="cn=dwells,cn=users,dc=sirius,dc=com"
+```
+
+```
+ADP.ENV_OWNER_USER_NAME="cn=dwells,cn=users,dc=sirius,dc=com"
+```
+
+```
+APP_ENGINE.ADMIN_USER="dwells"
+```
+
+```
+APP_PLAYBACK.ADMIN_USER="dwells"
+```
+
+```
+BASTUDIO.ADMIN_USER="dwells"
+```
+
+```
+ADS.EXTERNAL_GIT_MONGO_URI="mongodb://admin:passw0rd@prereq-cp4ba-mongodb-svc.<ns>.svc.cluster.local:27017/ads-git?retryWrites=true&w=majority&authSource=admin"`
+```
+* where _<ns>_ is namespace where MongoDB is installed.
+
+```
+ADS.EXTERNAL_MONGO_URI="mongodb://admin:passw0rd@prereq-cp4ba-mongodb-svc.<ns>.svc.cluster.local:27017/ads?retryWrites=true&w=majority&authSource=admin"
+```
+* where _<ns>_ is namespace where MongoDB is installed.
+
+```
+ADS.EXTERNAL_MONGO_HISTORY_URI="mongodb://admin:passw0rd@prereq-cp4ba-mongodb-svc.<ns>.svc.cluster.local:27017/ads-history?retryWrites=true&w=majority&authSource=admin"
+```
+* where _<ns>_ is namespace where MongoDB is installed.
+
+```
+ADS.EXTERNAL_RUNTIME_MONGO_URI="mongodb://admin:passw0rd@prereq-cp4ba-mongodb-svc.<ns>.svc.cluster.local:27017/ads-runtime-archive-metadata?retryWrites=true&w=majority&authSource=admin"
+```
+* where _<ns>_ is namespace where MongoDB is installed.
+

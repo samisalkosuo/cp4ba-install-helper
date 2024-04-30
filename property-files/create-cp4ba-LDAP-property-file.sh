@@ -1,42 +1,41 @@
 #!/bin/bash
 
-if [[ "$CP4BA_PREREQ_DIRECTORY" == "" ]]; then
-    echo "CP4BA_PREREQ_DIRECTORY environment variable is missing."
+if [[ "$CP4BA_CASE_VERSION" == "" ]]; then
+    echo "CP4BA_CASE_VERSION environment variable is not set."
     exit 1
 fi
 
-if [[ "$LDAP_SERVER_FQDN" == "" ]]; then
-    echo "LDAP_SERVER_FQDN environment variable is not set."
-    exit 1
-fi
-if [[ "$LDAP_SERVER_PORT" == "" ]]; then
-    echo "LDAP_SERVER_PORT environment variable is not set."
-    exit 1
-fi
-if [[ "$LDAP_SERVER_PASSWORD" == "" ]]; then
-    echo "LDAP_SERVER_PASSWORD environment variable is not set."
-    exit 1
-fi
-if [[ "$LDAP_SERVER_CERT_FILE_FOLDER" == "" ]]; then
-    echo "LDAP_SERVER_CERT_FILE_FOLDER environment variable is not set."
+if [[ "$CP4BA_NAMESPACE" == "" ]]; then
+    echo "CP4BA_NAMESPACE environment variable is not set."
     exit 1
 fi
 
+if [[ "$LDAP_BIND_PASSWORD" == "" ]]; then
+    echo "LDAP_BIND_PASSWORD environment variable is not set."
+    exit 1
+fi
+
+#change password to base64 encoded
+BASE64_ENCODED_PWD=$(echo -n $LDAP_BIND_PASSWORD | base64)
+LDAP_BIND_PASSWORD="{Base64}$BASE64_ENCODED_PWD"
+
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 #set values for LDAP server
-LDAP_SERVER="$LDAP_SERVER_FQDN"
-LDAP_PORT="$LDAP_SERVER_PORT"
+LDAP_SERVER="prereq-cp4ba-ad-demo-service.${CP4BA_NAMESPACE}.svc.cluster.local"
+LDAP_PORT="636"
 LDAP_BASE_DN="dc=sirius,dc=com"
 LDAP_BIND_DN="Administrator@sirius.com"
-LDAP_BIND_DN_PASSWORD="$LDAP_SERVER_PASSWORD"
+LDAP_BIND_DN_PASSWORD="$LDAP_BIND_PASSWORD"
 LDAP_SSL_ENABLED="True"
 #folder where LDAP server certificate is found. certificate must be named: `ldap-cert.crt`.
-LDAP_SSL_CERT_FILE_FOLDER="$LDAP_SERVER_CERT_FILE_FOLDER"
+LDAP_SSL_CERT_FILE_FOLDER="$SCRIPT_DIR/../ldap-cert"
 LDAP_GROUP_BASE_DN="dc=sirius,dc=com"
 LDAP_GROUP_DISPLAY_NAME_ATTR="cn"
 LC_AD_GC_HOST="$LDAP_SERVER"
 LC_AD_GC_PORT="$LDAP_PORT"
 
+CP4BA_PREREQ_DIRECTORY=$SCRIPT_DIR/../$CP4BA_CASE_VERSION/cert-kubernetes/scripts/cp4ba-prerequisites
 LDAP_PROPERTY_FILE=$CP4BA_PREREQ_DIRECTORY/propertyfile/cp4ba_LDAP.property
 
 #create LDAP property file

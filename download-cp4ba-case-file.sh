@@ -1,16 +1,15 @@
 #!/bin/bash
 
-if [[ "$1" == "" ]]; then
-    echo "Case version missing"
-    echo "See https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation"
-    echo ""
-    echo "Sample usage: $0 5.1.3"
-    exit 1
-fi
 
 #check version
 #https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation
-CP4BA_CASE_VERSION=$1
+if [[ "$CP4BA_CASE_VERSION" == "" ]]; then
+    echo "CP4BA_CASE_VERSION environment variable is missing"
+    echo "See https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation"
+    echo "and then:"
+    echo "export CP4BA_CASE_VERSION=5.1.3"
+    exit 1
+fi
 
 echo "Downloading and extracting CP4BA case version $CP4BA_CASE_VERSION..."
 

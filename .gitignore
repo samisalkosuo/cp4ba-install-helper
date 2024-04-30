@@ -1,13 +1,13 @@
 local/
-**/temp.yaml
+**/temp.yaml*
 users.htpasswd
 htpasswd/*yaml
 5.*/
 execute-sql-in-container.sh
 run-sql-in-container.sh
-ldap-cert.crt
+ldap-ca.crt
 export-env.sh
 cert-kubernetes.tar
 .env
 .vscode/
-property-file-helpers/test
+property-files/test

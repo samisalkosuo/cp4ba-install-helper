@@ -2,18 +2,15 @@
 
 #validate prereqs
 
-
-if [[ "$1" == "" ]]; then
-    echo "case version is missing."
-    echo "for example: $0 5.1.3"
+if [[ "$CP4BA_CASE_VERSION" == "" ]]; then
+    echo "CP4BA_CASE_VERSION environment variable is not set."
     exit 1
 fi
 
-VERSION_DIR=$1
 #get script dir
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 set -e
-cd $VERSION_DIR
+cd $CP4BA_CASE_VERSION
 set +e
 
 rm -f cert-kubernetes.tar
@@ -25,18 +22,12 @@ oc cp -c operator cert-kubernetes.tar $POD_NAME:/tmp/
 cd $SCRIPT_DIR/..
 oc cp -c operator ldap-cert/ldap-cert.crt $POD_NAME:/tmp/
 
+#extract files and change ldap property file
+oc exec -it -c operator $POD_NAME -- bash -c "cd /tmp && tar -xf cert-kubernetes.tar && cd cert-kubernetes/scripts && sed -i \"s/^LDAP_SSL_CERT_FILE_FOLDER.*/LDAP_SSL_CERT_FILE_FOLDER=\\\"\\\/tmp\\\"/g\" cp4ba-prerequisites/propertyfile/cp4ba_LDAP.property"
+
 echo "Files copied to operator pod."
 echo ""
 echo "Login to pod:"
-echo "  oc exec -it $POD_NAME -- bash"
-echo "Change dir:"
-echo "  cd /tmp"
-echo "Extract:"
-echo "  tar -xf cert-kubernetes.tar"
-echo "Change dir:"
-echo "  cd cert-kubernetes/scripts"
-echo "Edit property file:"
-echo "  vi cp4ba-prerequisites/propertyfile/cp4ba_LDAP.property"
-echo "  Change value of LDAP_SSL_CERT_FILE_FOLDER to \"/tmp\""
+echo "  oc exec -it -c operator $POD_NAME -- bash"
 echo "Validate:"
-echo "  ./cp4a-prerequisites.sh -m validate"
+echo "  cd /tmp/cert-kubernetes/scripts && ./cp4a-prerequisites.sh -m validate"

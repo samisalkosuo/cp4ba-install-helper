@@ -11,7 +11,7 @@ LDAP_SERVER=$1
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-echo | openssl s_client -connect  $LDAP_SERVER 2>/dev/null | openssl x509 > $SCRIPT_DIR/ldap-cert.crt
+echo | openssl s_client -connect  $LDAP_SERVER 2>/dev/null | openssl x509 > $SCRIPT_DIR/ldap-cert2.crt
 
 echo "LDAP certificate downloaded."
 echo ""
