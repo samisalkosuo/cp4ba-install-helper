@@ -105,7 +105,7 @@ CP4BA includes helper script to set up prereqs like secrets and database tables.
 * This script asks what to install and creates property files to be updated.
 * Follow the instructions in the script.
 * Select desired capabilities.
-** See for example https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=deployment-capability-patterns-production-deployments[here].
+** Capalities and capability patterns is described https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=deployment-capability-patterns-production-deployments[here].
 * Select Microsoft Active Directory as LDAP.
 * RWX storage: 
 ```
