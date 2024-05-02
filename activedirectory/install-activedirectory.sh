@@ -52,11 +52,6 @@ function configuration
         mv ${TEMP_FILE}2 ${TEMP_FILE}
     fi
 
-    if [[ "$LDAP_BIND_PASSWORD" != "" ]]; then
-        sed "s/SAMBA_ADMIN_PASSWORD: \"S4m3aPassw@rd\"/SAMBA_ADMIN_PASSWORD: \"${LDAP_BIND_PASSWORD}\"/" ${TEMP_FILE} > ${TEMP_FILE}2
-        mv ${TEMP_FILE}2 ${TEMP_FILE}
-    fi
-
     oc $OP -f $TEMP_FILE
 
 }

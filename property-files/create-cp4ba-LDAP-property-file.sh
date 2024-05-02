@@ -10,12 +10,8 @@ if [[ "$CP4BA_NAMESPACE" == "" ]]; then
     exit 1
 fi
 
-if [[ "$LDAP_BIND_PASSWORD" == "" ]]; then
-    echo "LDAP_BIND_PASSWORD environment variable is not set."
-    exit 1
-fi
-
 #change password to base64 encoded
+LDAP_BIND_PASSWORD="S4m3aPassw@rd"
 BASE64_ENCODED_PWD=$(echo -n $LDAP_BIND_PASSWORD | base64)
 LDAP_BIND_PASSWORD="{Base64}$BASE64_ENCODED_PWD"
 
