@@ -43,6 +43,7 @@ execute adp
 execute ae
 execute ban
 execute bas
+execute baw-aws
 execute fncm
 execute odm
 

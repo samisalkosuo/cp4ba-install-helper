@@ -53,6 +53,8 @@ sed -i "s/ADS.EXTERNAL_GIT_MONGO_URI=\"<Required>\"/ADS.EXTERNAL_GIT_MONGO_URI=\
 sed -i "s/ADS.EXTERNAL_MONGO_URI=\"<Required>\"/ADS.EXTERNAL_MONGO_URI=\"mongodb:\/\/admin:passw0rd@prereq-cp4ba-mongodb-svc.$CP4BA_NAMESPACE.svc.cluster.local:27017\/ads?retryWrites=true\&w=majority\&authSource=admin\"/g" $USER_PROFILE_PROPERTY_FILE
 sed -i "s/ADS.EXTERNAL_MONGO_HISTORY_URI=\"<Required>\"/ADS.EXTERNAL_MONGO_HISTORY_URI=\"mongodb:\/\/admin:passw0rd@prereq-cp4ba-mongodb-svc.$CP4BA_NAMESPACE.svc.cluster.local:27017\/ads-history?retryWrites=true\&w=majority\&authSource=admin\"/g" $USER_PROFILE_PROPERTY_FILE
 sed -i "s/ADS.EXTERNAL_RUNTIME_MONGO_URI=\"<Required>\"/ADS.EXTERNAL_RUNTIME_MONGO_URI=\"mongodb:\/\/admin:passw0rd@prereq-cp4ba-mongodb-svc.$CP4BA_NAMESPACE.svc.cluster.local:27017\/ads-runtime-archive-metadata?retryWrites=true\&w=majority\&authSource=admin\"/g" $USER_PROFILE_PROPERTY_FILE
+sed -i "s/BAW_RUNTIME.ADMIN_USER=\"<Required>\"/BAW_RUNTIME.ADMIN_USER=\"$DEFAULT_USER\"/g" $USER_PROFILE_PROPERTY_FILE
+
 
 REQUIRED_PROPERTIES=$(cat $USER_PROFILE_PROPERTY_FILE | grep "<Required>")
 
