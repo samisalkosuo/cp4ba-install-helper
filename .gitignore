@@ -1,4 +1,5 @@
 local/
+old/
 **/temp.yaml*
 users.htpasswd
 htpasswd/*yaml
