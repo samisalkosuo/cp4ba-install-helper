@@ -42,7 +42,7 @@ export LDAP_USER_PASSWORD="passw0rd"
 
 CP4BA requires LDAP and databases.
 
-* This script installs Active Directory, PostgreSQL and MongoDB.
+* This script installs Active Directory, PostgreSQL, MongoDB and Gitea.
 
 ```
 ./install-cp4ba-prereqs.sh
@@ -50,6 +50,7 @@ CP4BA requires LDAP and databases.
 
 * PostgreSQL is used by all capabilities.
 * MongoDB is required by ADS and optional by ADP.
+* Gitea is used by ADS and ADP.
 
 === Active Directory demo
 
@@ -59,7 +60,16 @@ Users and groups are the same as in the demo, with following additional users:
 
 * Group: _staff_.
 ** Users in _staff_: _user1,user2,user3,user4,user5,user6,user7,user8,user9,user10_.
-* Group admin has also user _cp4admin_.
+* Group _admin_ has also user _cp4admin_.
+
+=== Gitea
+
+Git is used by both Automation Decision Services and Automation Document Processing. If you create either type of automations, you may use Gitea that is installed as a prereq. 
+
+Alternatively, GitHub or other Git provider can be used.
+
+* Gitea information (URL, repositories, credentials) are in _prereq-cp4ba-gitea-info_-ConfigMap in the _CP4BA_NAMESPACE_-namespace.
+* Note: Gitea uses certificate provided by OpenShift router. If that certificate is self-signed, additional configuration is needed by ADP: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=processing-preparing-git-connection.
 
 == Download case file
 
@@ -153,6 +163,11 @@ dbserver1
 Prereq property files must be edited to include, for example, user names and password and database connection information.
 
 Follow instructions in link:property-files[property-files]-directory to edit property files either manually or using scripts.
+
+* This script modifies all property files:
+```
+./property-files/modify-all-property-files.sh
+```
 
 == CP4BA prerequisites - generate SQL and secrets
 
