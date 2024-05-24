@@ -12,6 +12,8 @@ Installation is based on documentation: https://www.ibm.com/docs/en/cloud-paks/c
 
 * OpenShift cluster and cluster admin access to it.
 ** OpenShift 4.14 is supported by https://www.ibm.com/support/pages/node/7128178[CP4BA 23.0.2 IF003].
+* Storageclass that supports RWX and RWO.
+** OpenShift Data Foundation (ODF or OCS) is a great choice.
 * Get IBM entitlement key from https://myibm.ibm.com/products-services/containerlibrary.
 * Clone or download this repository to your workstation or server.
 ** These scripts have been tested with Rocky Linux 9.3 running inside https://github.com/samisalkosuo/devcon[container].
