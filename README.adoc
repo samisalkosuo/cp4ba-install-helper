@@ -132,11 +132,11 @@ $CP4BA_CASE_VERSION/cert-kubernetes/scripts
 * Select desired capabilities.
 ** Capalities and capability patterns is described https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=deployment-capability-patterns-production-deployments[here].
 * Select Microsoft Active Directory as LDAP.
-* RWX storage: 
+* RWX storage, for example:
 ```
 ocs-storagecluster-cephfs
 ```
-* RWO storage: 
+* RWO storage, for example: 
 ```
 ocs-storagecluster-ceph-rbd
 ```
