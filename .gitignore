@@ -12,3 +12,5 @@ cert-kubernetes.tar
 .env
 .vscode/
 property-files/test
+post-install/
+cert-kubernetes/

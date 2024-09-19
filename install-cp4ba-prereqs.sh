@@ -11,6 +11,5 @@ if [[ "$CP4BA_NAMESPACE" == "" ]]; then
 fi
 
 bash ./activedirectory/install-activedirectory.sh $CP4BA_NAMESPACE
-bash ./postgresql/install-postgresql.sh $CP4BA_NAMESPACE
 bash ./mongodb/install-mongodb.sh $CP4BA_NAMESPACE
 bash ./gitea/install-gitea.sh $CP4BA_NAMESPACE

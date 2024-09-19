@@ -4,25 +4,26 @@
 
 This repo includes instructions and scripts to install IBM Cloud Pak for Business Automation in a certain way, suitable for demonstrations and development.
 
-The certain way of installation means CP4BA production installation where Active Directory, PostgreSQL and MongoDB are installed on the same namespace.
+The certain way of installation means CP4BA production installation where Active Directory and MongoDB are installed on the same namespace.
 
-Installation is based on documentation: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2. 
+Installation is based on documentation: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/24.0.0. 
 
 == Prepare for installation
 
 * OpenShift cluster and cluster admin access to it.
-** OpenShift 4.14 is supported by https://www.ibm.com/support/pages/node/7128178[CP4BA 23.0.2 IF003].
+** OpenShift 4.12, 4.14 and  4.15 are supported. See docs for latest information.
 * Storageclass that supports RWX and RWO.
-** OpenShift Data Foundation (ODF or OCS) is a great choice.
+** OpenShift Data Foundation (ODF) is a great choice.
 * Get IBM entitlement key from https://myibm.ibm.com/products-services/containerlibrary.
 * Clone or download this repository to your workstation or server.
-** These scripts have been tested with Rocky Linux 9.3 running inside https://github.com/samisalkosuo/devcon[container].
+** Bash-shell and Linux preferred.
 
 == Create user
 
 CP4BA installation asks for user during installation. If not already available, you may use script link:htpasswd/htpasswd-util.sh[htpasswd-util.sh] to create htpasswd provider and add/remove users.
 
 * Create htpasswd provider and _cladmin_-user.
+
 ```
 ./htpasswd-util.sh create
 ```
@@ -31,28 +32,29 @@ CP4BA installation asks for user during installation. If not already available, 
 
 * Export these environment variables:
 ```
+export CP4BA_VERSION=24.0.0-IF002
 export CP4BA_NAMESPACE=cp4ba
-export CP4BA_CASE_VERSION=5.1.4
 export LDAP_USER_PASSWORD="passw0rd"
 ```
 
+* _CP4BA_VERSION_ is the version/branch of CP4BA. See https://github.com/icp4a/cert-kubernetes for the latest version/branch.
 * _CP4BA_NAMESPACE_ is the namespace where CP4BA will be installed.
-* _CP4BA_CASE_VERSION_ is the case version. Check latest version from https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation.
 * _LDAP_USER_PASSWORD_ is the password for all users in Active Directory.
+* If using CP4BA v.23.x, see branch _23.x_.
 
 == Install prerequirements
 
 CP4BA requires LDAP and databases.
 
-* This script installs Active Directory, PostgreSQL, MongoDB and Gitea.
+* This script installs Active Directory, MongoDB and Gitea.
 
 ```
 ./install-cp4ba-prereqs.sh
 ```
 
-* PostgreSQL is used by all capabilities.
-* MongoDB is required by ADS and optional by ADP.
+* MongoDB is required by ADP and ADS.
 * Gitea is used by ADS and ADP.
+* Note: PostgreSQL is used by all capabilities and it is installed by CP4BA operator.
 
 === Active Directory demo
 
@@ -73,19 +75,13 @@ Alternatively, GitHub or other Git provider can be used.
 * Gitea information (URL, repositories, credentials) are in _prereq-cp4ba-gitea-info_-ConfigMap in the _CP4BA_NAMESPACE_-namespace.
 * Note: Gitea uses certificate provided by OpenShift router. If that certificate is self-signed, additional configuration is needed by ADP: https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=processing-preparing-git-connection.
 
-== Download case file
+== Clone CP4BA cert-kubernetes
 
-CP4BA case file is published to GitHub. Check latest version from https://github.com/IBM/cloud-pak/blob/master/repo/case/ibm-cp-automation.
-
-Download case file using script:
+Scripts that are used to install CP4BA are in GitHub repository. Use script to clone it.
 
 ```
-./download-cp4ba-case-file.sh
+./clone-cp4ba-repository.sh
 ```
-
-* The case version was specified earlier in _CP4BA_CASE_VERSION_ environment variable.
-* Script downloads and extracts the file to `<version>/cert-kubernetes`
-* `<version>/cert-kubernetes/scripts` includes scripts that will be used.
 
 == Cluster setup
 
@@ -95,24 +91,28 @@ Note: this can be used multiple times in multiple namespaces so you can install 
 
 * Go to directory:
 ```
-$CP4BA_CASE_VERSION/cert-kubernetes/scripts
+$CP4BA_VERSION/cert-kubernetes/scripts
 ```
 
 * Execute:
 ```
 ./cp4a-clusteradmin-setup.sh
 ```
+
 * Follow the instructions in the script.
 * For example, set following parameters:
-** OpenShift platform: private
-** Deployment: production
-** FIPS check: no
-** Private catalog: yes/no
-*** Select yes if you want catalog sources to be namespace scoped.
-** Namespace: your chosen namespace 
+** Airgap or online: _online_.
+** OpenShift platform: _private_.
+** Deployment: _production_.
+** FIPS check: _no_.
+** Private catalog: _yes/no_.
+*** Select _yes_, if you want catalog sources to be namespace scoped.
+** Separate operators and operands: _yes/no_.
+** Select _no_, if you want operators and operands to be in the same namespace.
+** Namespace: your chosen namespace.
 ** Select user
 ** Enter registry key
-* Wait until operators are installed
+* Wait until operators are installed.
 
 == CP4BA prerequisites - create property files
 
@@ -120,17 +120,17 @@ CP4BA includes helper script to set up prereqs like secrets and database tables.
 
 * Go to directory:
 ```
-$CP4BA_CASE_VERSION/cert-kubernetes/scripts
+$CP4BA_VERSION/cert-kubernetes/scripts
 ```
 
 * Execute:
 ```
-./cp4a-prerequisites.sh -m property
+./cp4a-prerequisites.sh -m property -n $CP4BA_NAMESPACE
 ```
 * This script asks what to install and creates property files to be updated.
 * Follow the instructions in the script.
 * Select desired capabilities.
-** Capalities and capability patterns is described https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=deployment-capability-patterns-production-deployments[here].
+** Capalities and capability patterns is described https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/24.0.0?topic=deployment-capability-patterns-production-deployments[here].
 * Select Microsoft Active Directory as LDAP.
 * RWX storage, for example:
 ```
@@ -141,20 +141,15 @@ ocs-storagecluster-cephfs
 ocs-storagecluster-ceph-rbd
 ```
 * Select small deployment profile.
-* Select PostgreSQL database.
-* Enter database server alias name:
-```
-dbserver1
-```
-* Enter chosen namespace.
+* Select _PostgreSQL EDB_ database.
 * Do not restrict network egress.
 ** Restrict only in production environments, if you know what you are doing.
-* Select 1 additional object store.
-* Select Yes as limited CPE storage support.
+* Select NO when asked about external databases for IM metastore, Zen metastore and BTS metastore.
+* Use default for external certificate.
+* If asked, select 1 additional object store.
+* If asked, select Yes as limited CPE storage support.
 ** If selecting No, it consumes licenses.
 * The script generates property files that need to be modified:
-** `cp4ba_db_name_user.property`
-** `cp4ba_db_server.property`
 ** `cp4ba_LDAP.property`
 ** `cp4ba_user_profile.property`
 * The next section describes what to do with the property files.
@@ -171,46 +166,41 @@ Follow instructions in link:property-files[property-files]-directory to edit pro
 ./property-files/modify-all-property-files.sh
 ```
 
-== CP4BA prerequisites - generate SQL and secrets
+== CP4BA prerequisites - generate secrets
 
-After the property files have been modified, _cp4a-prerequisites.sh_-script is used to generate SQL statements and secrets.
+After the property files have been modified, _cp4a-prerequisites.sh_-script is used to generate secrets.
 
 * Go to directory:
 ```
-$CP4BA_CASE_VERSION/cert-kubernetes/scripts
+$CP4BA_VERSION/cert-kubernetes/scripts
 ```
 * Execute:
 ```
-./cp4a-prerequisites.sh -m generate
+./cp4a-prerequisites.sh -m generate -n $CP4BA_NAMESPACE
 ```
 
-* SQL statement files and secret-files are created.
+* Secret-files are created.
 * Change to your chosen namespace.
 ** For example: `oc project cp4ba`
 
 === Create secrets
 
-* Change to directory `cp4ba-prerequisites`
+* Change to directory 
+```
+cp4ba-prerequisites/project/$CP4BA_NAMESPACE
+```
 * Execute:
 ```
 ./create_secret.sh
 ```
 * This creates required secrets.
 
-=== Create databases
-
-* Execute: 
-```
-./database/execute-cp4ba-postgresql-dbscripts.sh
-```
-* This copies SQL scripts inside PostgreSQL container and executes them to create required databases.
-
 == CP4BA prerequisites - validate
 
-This step is optional. Validation uses _cp4a-prerequisites.sh_-script to verify that secrets and databases are created.
-Since database is inside the cluster, verification needs to be done from CP4BA operator container.
+This step is optional. Validation uses _cp4a-prerequisites.sh_-script to verify that secrets are created and LDAP is can be connected.
+Since LDAP is inside the cluster, verification needs to be done from CP4BA operator container.
 
-This is documented https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/23.0.2?topic=pycc-recommended-preparing-databases-secrets-your-chosen-capabilities-by-running-script and step 9. 
+This is documented https://www.ibm.com/docs/en/cloud-paks/cp-biz-automation/24.0.0?topic=pycc-recommended-preparing-databases-secrets-your-chosen-capabilities-by-running-script and step 9. 
 
 Alternatively:
 
@@ -227,12 +217,12 @@ Now that prereqs are complete, we can install CP4BA.
 
 * Go to directory:
 ```
-$CP4BA_CASE_VERSION/cert-kubernetes/scripts
+$CP4BA_VERSION/cert-kubernetes/scripts
 ```
 
 * Execute:
 ```
-./cp4a-deployment.sh
+./cp4a-deployment.sh -n $CP4BA_NAMESPACE
 ```
 
 * Accept license.
@@ -245,12 +235,12 @@ $CP4BA_CASE_VERSION/cert-kubernetes/scripts
 * Enter 'Yes' to proceed with deployment.
 * CP4BA custom CR YAML-file is created.
 ** File is: `generated-cr/ibm_cp4a_cr_final.yaml`
+* Optionally, verify the generated YAML.
+** Check also link:Troubleshooting.adoc[Troubleshooting.adoc].
 * Apply YAML:
-** Change to chosen namespace.
 ```
-oc apply -f generated-cr/ibm_cp4a_cr_final.yaml
+oc apply -f generated-cr/project/$CP4BA_NAMESPACE/ibm_cp4a_cr_final.yaml
 ```
-
 
 == CP4BA installation - follow
 

@@ -1,0 +1,25 @@
+= Troubleshooting
+
+== 24.0.0 - viewone-deploy is not deployed
+
+viewone-deploy shows error:
+
+```
+JVMJ9GC028E Option too large: '-Xmx (as set by -XX:MaxRAMPercentage)'
+JVMJ9VM015W Initialization error for library j9gc29(2): Failed to initialize
+Error: Could not create the Java Virtual Machine.
+Error: A fatal exception has occurred. Program will exit.
+```
+
+Fix by adding to CR:
+
+```
+  ecm_configuration:
+    document_processing:
+      viewone:
+        auto_scaling:
+          enabled: false
+        viewone_production_setting:
+          #set value 50 or lower if not working
+          jvm_max_heap_percentage: 50
+```

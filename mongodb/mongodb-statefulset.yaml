@@ -21,7 +21,7 @@ metadata:
 type: Opaque
 stringData:
   MONGO_ROOT_USERNAME: admin
-  MONGO_ROOT_PASSWORD: passw0rd
+  MONGO_ROOT_PASSWORD: "passw0rd"
 ---
 apiVersion: v1
 kind: ConfigMap

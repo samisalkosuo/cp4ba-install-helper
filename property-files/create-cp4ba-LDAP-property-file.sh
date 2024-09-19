@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [[ "$CP4BA_CASE_VERSION" == "" ]]; then
-    echo "CP4BA_CASE_VERSION environment variable is not set."
+if [[ "$CP4BA_VERSION" == "" ]]; then
+    echo "CP4BA_VERSION environment variable is not set."
     exit 1
 fi
 
@@ -28,11 +28,14 @@ LDAP_SSL_ENABLED="True"
 LDAP_SSL_CERT_FILE_FOLDER="$SCRIPT_DIR/../ldap-cert"
 LDAP_GROUP_BASE_DN="dc=sirius,dc=com"
 LDAP_GROUP_DISPLAY_NAME_ATTR="cn"
-LC_AD_GC_HOST="$LDAP_SERVER"
-LC_AD_GC_PORT="$LDAP_PORT"
 
-CP4BA_PREREQ_DIRECTORY=$SCRIPT_DIR/../$CP4BA_CASE_VERSION/cert-kubernetes/scripts/cp4ba-prerequisites
-LDAP_PROPERTY_FILE=$CP4BA_PREREQ_DIRECTORY/propertyfile/cp4ba_LDAP.property
+CP4BA_PREREQ_DIRECTORY=$SCRIPT_DIR/../$CP4BA_VERSION/cert-kubernetes/scripts/cp4ba-prerequisites
+LDAP_PROPERTY_FILE=$CP4BA_PREREQ_DIRECTORY/project/$CP4BA_NAMESPACE/propertyfile/cp4ba_LDAP.property
+
+#copy LDAP cert
+cp $LDAP_SSL_CERT_FILE_FOLDER/ldap-cert.crt $CP4BA_PREREQ_DIRECTORY/project/$CP4BA_NAMESPACE/propertyfile/cert/ldap/
+#set LDAP cert dir
+LDAP_SSL_CERT_FILE_FOLDER=$CP4BA_PREREQ_DIRECTORY/project/$CP4BA_NAMESPACE/propertyfile/cert/ldap/
 
 #create LDAP property file
 cat > $LDAP_PROPERTY_FILE << EOF
@@ -88,10 +91,10 @@ LDAP_GROUP_MEMBERSHIP_SEARCH_FILTER="(&(cn=%v)(objectcategory=group))"
 LDAP_GROUP_MEMBER_ID_MAP="memberOf:member"
 
 ## This is the Global Catalog host for the LDAP
-LC_AD_GC_HOST="$LC_AD_GC_HOST"
+LC_AD_GC_HOST=""
 
 ## This is the Global Catalog port for the LDAP
-LC_AD_GC_PORT="$LC_AD_GC_PORT"
+LC_AD_GC_PORT=""
 
 ## One possible value is "(&(sAMAccountName=%v)(objectcategory=user))"
 LC_USER_FILTER="(&(sAMAccountName=%v)(objectcategory=user))"
