@@ -1,5 +1,32 @@
 = Troubleshooting
 
+== 24.0.0 - trusted certificates
+
+If connecting to external services from (for example) Workflow, add certificate secrets to CR. 
+
+For example, if secret is named `cpd-route-tls-secret` add following to CR:
+
+```
+spec:
+  shared_configuration:
+    trusted_certificate_list:
+    - cpd-route-tls-secret
+```
+
+== 24.0.0 - graphiQL is not deployed
+
+By default, graphiqQL is not available. Add following to CR:
+
+```
+spec:
+  ecm_configuration:
+    graphql:
+      graphql_production_setting:
+        enable_graph_iql: true
+```
+
+Verify that graphql is available: https://cp4ba.example.com/content-services-graphql/.
+
 == 24.0.0 - viewone-deploy is not deployed
 
 viewone-deploy shows error:
@@ -14,6 +41,7 @@ Error: A fatal exception has occurred. Program will exit.
 Fix by adding to CR:
 
 ```
+spec:
   ecm_configuration:
     document_processing:
       viewone:
