@@ -33,7 +33,7 @@ CP4BA installation asks for user during installation. If not already available, 
 
 * Export these environment variables:
 ```
-export CP4BA_VERSION=24.0.0-IF002
+export CP4BA_VERSION=24.0.1
 export CP4BA_NAMESPACE=cp4ba
 export LDAP_USER_PASSWORD="passw0rd"
 ```
@@ -90,9 +90,9 @@ Cluster setup installs, if not already installed, necessary operator catalogs,IB
 
 Note: this can be used multiple times in multiple namespaces so you can install CP4BA multiple times in the same cluster. Remember to modify environment variables when installing to a new namespace.
 
-* Go to directory:
+* Change to directory:
 ```
-$CP4BA_VERSION/cert-kubernetes/scripts
+cd $CP4BA_VERSION/cert-kubernetes/scripts
 ```
 
 * Execute:
@@ -119,9 +119,9 @@ $CP4BA_VERSION/cert-kubernetes/scripts
 
 CP4BA includes helper script to set up prereqs like secrets and database tables.
 
-* Go to directory:
+* Change to directory:
 ```
-$CP4BA_VERSION/cert-kubernetes/scripts
+cd $CP4BA_VERSION/cert-kubernetes/scripts
 ```
 
 * Execute:
@@ -171,9 +171,9 @@ Follow instructions in link:property-files[property-files]-directory to edit pro
 
 After the property files have been modified, _cp4a-prerequisites.sh_-script is used to generate secrets.
 
-* Go to directory:
+* Change to directory:
 ```
-$CP4BA_VERSION/cert-kubernetes/scripts
+cd $CP4BA_VERSION/cert-kubernetes/scripts
 ```
 * Execute:
 ```
@@ -188,7 +188,7 @@ $CP4BA_VERSION/cert-kubernetes/scripts
 
 * Change to directory 
 ```
-cp4ba-prerequisites/project/$CP4BA_NAMESPACE
+cd cp4ba-prerequisites/project/$CP4BA_NAMESPACE
 ```
 * Execute:
 ```
@@ -216,9 +216,9 @@ Alternatively:
 
 Now that prereqs are complete, we can install CP4BA.
 
-* Go to directory:
+* Change to directory:
 ```
-$CP4BA_VERSION/cert-kubernetes/scripts
+cd $CP4BA_VERSION/cert-kubernetes/scripts
 ```
 
 * Execute:
